@@ -30,11 +30,26 @@ jobs:
       - name: Flutter version
         run: flutter --version
 
+      - name: Flutter doctor (diagnóstico)
+        run: flutter doctor -v
+
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build web (base-href dinâmico para Pages)
-        run: flutter build web --release --base-href=/${{ github.event.repository.name }}/
+      - name: Clean (garantir ambiente limpo)
+        run: flutter clean
+
+      - name: Build web (base-href dinâmico para Pages, verbose)
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter build web --release -v --base-href=/${{ github.event.repository.name }}/ 2>&1 | tee build_web_release.log
+
+      - name: Upload build logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: build_web_release_logs
+          path: build_web_release.log
 
       - name: Upload artifact para Pages
         uses: actions/upload-pages-artifact@v3

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "171178762369",
+    "project_id": "fintrack360",
+    "storage_bucket": "fintrack360.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171178762369:android:8bf627c9336e3e72086d80",
+        "android_client_info": {
+          "package_name": "com.rbtech.fintrack360"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdpWyJYBwcD9i2Tonk-2IMxXNDJa-fRuo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

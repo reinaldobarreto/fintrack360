@@ -72,6 +72,13 @@ jobs:
           echo "== Listando build/web/ =="
           ls -la fintrack360/build/web || true
 
+      - name: Add .nojekyll e validar base-href
+        run: |
+          echo "== Criando .nojekyll para evitar processamento Jekyll =="
+          touch fintrack360/build/web/.nojekyll
+          echo "== Conferindo base-href no index.html =="
+          sed -n '1,40p' fintrack360/build/web/index.html | sed -n '1,20p'
+
       - name: Upload build logs
         uses: actions/upload-artifact@v4
         with:

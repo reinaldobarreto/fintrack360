@@ -45,7 +45,7 @@ class TemaConfiguracao {
         ),
       ),
 
-      // Cards (atualizado para CardThemeData em versões recentes do Flutter)
+      // Cards
       cardTheme: CardThemeData(
         color: corSuperficie,
         elevation: 4,

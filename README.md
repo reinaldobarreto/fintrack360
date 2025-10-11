@@ -28,9 +28,9 @@ Visual do app em uma grade compacta para leitura rápida:
   <img src="https://raw.githubusercontent.com/reinaldobarreto/fintrack360/main/assets/images/tela_relatorios_mobile.png" width="240" alt="Relatórios" />
 </p>
 <p align="center">
-  <img src="./assets/images/tela_categorias_mobile.png" width="240" alt="Categorias" />
-  <img src="./assets/images/tela_contas_mobile.png" width="240" alt="Contas" />
-  <img src="./assets/images/tela_cadastro_usuario_mobile.png" width="240" alt="Cadastro de Usuário" />
+  <img src="https://raw.githubusercontent.com/reinaldobarreto/fintrack360/main/assets/images/tela_categorias_mobile.png" width="240" alt="Categorias" />
+  <img src="https://raw.githubusercontent.com/reinaldobarreto/fintrack360/main/assets/images/tela_contas_mobile.png" width="240" alt="Contas" />
+  <img src="https://raw.githubusercontent.com/reinaldobarreto/fintrack360/main/assets/images/tela_cadastro_usuario_mobile.png" width="240" alt="Cadastro de Usuário" />
 </p>
 
 ## Como usar (local)

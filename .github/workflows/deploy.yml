@@ -83,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build_web_release_logs
-          path: fintrack360/build_web_release.log
+          path: build_web_release.log
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

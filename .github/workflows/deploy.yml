@@ -45,39 +45,39 @@ jobs:
           cache: true
 
       - name: Enable Flutter web
-        run: cd fintrack360 && flutter config --enable-web && flutter devices
+        run: flutter config --enable-web && flutter devices
 
       - name: Flutter version
-        run: cd fintrack360 && flutter --version
+        run: flutter --version
 
       - name: Flutter doctor (diagnóstico)
-        run: cd fintrack360 && flutter doctor -v
+        run: flutter doctor -v
 
       - name: Install dependencies
-        run: cd fintrack360 && flutter pub get
+        run: flutter pub get
 
       - name: Clean (garantir ambiente limpo)
-        run: cd fintrack360 && flutter clean
+        run: flutter clean
 
       - name: Build web (base-href dinâmico para Pages, verbose)
         run: |
           set -o pipefail
           echo "Base-href: /${{ github.event.repository.name }}/"
-          cd fintrack360 && flutter build web --release -v --web-renderer html --no-tree-shake-icons --base-href=/${{ github.event.repository.name }}/ 2>&1 | tee build_web_release.log
+          flutter build web --release -v --web-renderer html --no-tree-shake-icons --base-href=/${{ github.event.repository.name }}/ 2>&1 | tee build_web_release.log
         
       - name: Pós-build (verificar saída de build)
         run: |
           echo "== Listando build/ =="
-          ls -la fintrack360/build || true
+          ls -la build || true
           echo "== Listando build/web/ =="
-          ls -la fintrack360/build/web || true
+          ls -la build/web || true
 
       - name: Add .nojekyll e validar base-href
         run: |
           echo "== Criando .nojekyll para evitar processamento Jekyll =="
-          touch fintrack360/build/web/.nojekyll
+          touch build/web/.nojekyll
           echo "== Conferindo base-href no index.html =="
-          sed -n '1,40p' fintrack360/build/web/index.html | sed -n '1,20p'
+          sed -n '1,40p' build/web/index.html | sed -n '1,20p'
 
       - name: Upload build logs
         uses: actions/upload-artifact@v4
@@ -91,7 +91,7 @@ jobs:
       - name: Upload artifact para Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: fintrack360/build/web
+          path: build/web
 
   deploy:
     environment:

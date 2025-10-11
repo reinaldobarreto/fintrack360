@@ -32,31 +32,27 @@ jobs:
 
       - name: Flutter version
         run: flutter --version
-        working-directory: fintrack360
 
       - name: Flutter doctor (diagnóstico)
         run: flutter doctor -v
-        working-directory: fintrack360
 
       - name: Install dependencies
         run: flutter pub get
-        working-directory: fintrack360
 
       - name: Clean (garantir ambiente limpo)
         run: flutter clean
-        working-directory: fintrack360
 
       - name: Build web (base-href dinâmico para Pages, verbose)
         run: |
           set -o pipefail
           flutter build web --release -v --base-href=/${{ github.event.repository.name }}/ 2>&1 | tee build_web_release.log
-        working-directory: fintrack360
+        
 
       - name: Upload build logs
         uses: actions/upload-artifact@v4
         with:
           name: build_web_release_logs
-          path: fintrack360/build_web_release.log
+          path: build_web_release.log
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -64,7 +60,7 @@ jobs:
       - name: Upload artifact para Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: fintrack360/build/web
+          path: build/web
 
   deploy:
     environment:

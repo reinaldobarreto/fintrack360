@@ -62,7 +62,8 @@ jobs:
       - name: Build web (base-href dinâmico para Pages, verbose)
         run: |
           set -o pipefail
-          cd fintrack360 && flutter build web --release -v --base-href=/${{ github.event.repository.name }}/ 2>&1 | tee build_web_release.log
+          echo "Base-href: /${{ github.event.repository.name }}/"
+          cd fintrack360 && flutter build web --release -v --web-renderer html --no-tree-shake-icons --base-href=/${{ github.event.repository.name }}/ 2>&1 | tee build_web_release.log
         
       - name: Pós-build (verificar saída de build)
         run: |

@@ -5,6 +5,9 @@ para a pasta do projeto `assets/images/` com nomes padrão
 para o README: tela_login_mobile.png, tela_dashboard_mobile.png,
 e tela_lancamentos_mobile.png.
 
+Nota: também remove duplicatas existentes no destino com padrão `Screenshot_*.png`
+para manter somente o padrão `tela_*_mobile.png`.
+
 Uso:
 pwsh -File ./scripts/rename_screenshots.ps1
 #>
@@ -14,6 +17,13 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 $target = Join-Path $repoRoot 'assets\images'
 
 New-Item -ItemType Directory -Force -Path $target | Out-Null
+
+# Limpeza: remover duplicatas 'Screenshot_*' no destino para evitar confusão no README
+$dupScreens = Get-ChildItem -Path $target -Filter 'Screenshot_*.png' -File -ErrorAction SilentlyContinue
+if ($dupScreens -and $dupScreens.Count -gt 0) {
+  Write-Host "Removendo $($dupScreens.Count) duplicatas Screenshot_* do destino..."
+  foreach ($f in $dupScreens) { Remove-Item -Path $f.FullName -Force }
+}
 
 $exts = @('*.png','*.jpg','*.jpeg')
 

@@ -44,6 +44,9 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Enable Flutter web
+        run: cd fintrack360 && flutter config --enable-web && flutter devices
+
       - name: Flutter version
         run: cd fintrack360 && flutter --version
 

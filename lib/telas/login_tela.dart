@@ -78,6 +78,20 @@ class _LoginTelaState extends State<LoginTela> {
               Center(
                 child: Column(
                   children: [
+                    // Imagem de destaque (asset) para validar exibição na Web
+                    SizedBox(
+                      width: 160,
+                      height: 160,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.asset(
+                          'assets/images/tela_principal_mobile.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
                     Container(
                       width: 100,
                       height: 100,

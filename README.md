@@ -23,14 +23,14 @@ Aplicativo Flutter para controle financeiro pessoal/familiar. Foco em mobile-fir
 ### Galeria rápida
 Visual do app em uma grade compacta para leitura rápida:
 <p align="center">
-  <img src="assets/images/tela_principal_mobile.png" width="240" alt="Principal" />
-  <img src="assets/images/tela_adicionar_lancamento_mobile.png" width="240" alt="Adicionar Lançamento" />
-  <img src="assets/images/tela_relatorios_mobile.png" width="240" alt="Relatórios" />
+  <img src="./assets/images/tela_principal_mobile.png" width="240" alt="Principal" />
+  <img src="./assets/images/tela_adicionar_lancamento_mobile.png" width="240" alt="Adicionar Lançamento" />
+  <img src="./assets/images/tela_relatorios_mobile.png" width="240" alt="Relatórios" />
 </p>
 <p align="center">
-  <img src="assets/images/tela_categorias_mobile.png" width="240" alt="Categorias" />
-  <img src="assets/images/tela_contas_mobile.png" width="240" alt="Contas" />
-  <img src="assets/images/tela_cadastro_usuario_mobile.png" width="240" alt="Cadastro de Usuário" />
+  <img src="./assets/images/tela_categorias_mobile.png" width="240" alt="Categorias" />
+  <img src="./assets/images/tela_contas_mobile.png" width="240" alt="Contas" />
+  <img src="./assets/images/tela_cadastro_usuario_mobile.png" width="240" alt="Cadastro de Usuário" />
 </p>
 
 ## Como usar (local)
@@ -43,9 +43,9 @@ flutter run -d chrome
 ## Imagens do Funcionamento
 Para explicar visualmente o funcionamento no GitHub, inclua capturas de tela na pasta `assets/images/` usando nomes padronizados:
 
-![Login Mobile](assets/images/tela_login_mobile.png)
-![Dashboard Mobile](assets/images/tela_dashboard_mobile.png)
-![Lançamentos Mobile](assets/images/tela_lancamentos_mobile.png)
+![Principal](./assets/images/tela_principal_mobile.png)
+![Adicionar Lançamento](./assets/images/tela_adicionar_lancamento_mobile.png)
+![Relatórios](./assets/images/tela_relatorios_mobile.png)
 
 ### O que cada imagem mostra
 - Login Mobile: campos de e‑mail/senha, ação de entrar e opção de pular login (debug).
@@ -63,9 +63,9 @@ Para explicar visualmente o funcionamento no GitHub, inclua capturas de tela na 
 ### Dica: imagens lado a lado
 Você pode usar HTML no README para controlar largura/posição:
 <p align="center">
-  <img src="assets/images/tela_login_mobile.png" width="240" alt="Login" />
-  <img src="assets/images/tela_dashboard_mobile.png" width="240" alt="Dashboard" />
-  <img src="assets/images/tela_lancamentos_mobile.png" width="240" alt="Lançamentos" />
+  <img src="./assets/images/tela_principal_mobile.png" width="240" alt="Principal" />
+  <img src="./assets/images/tela_adicionar_lancamento_mobile.png" width="240" alt="Adicionar Lançamento" />
+  <img src="./assets/images/tela_relatorios_mobile.png" width="240" alt="Relatórios" />
   
 </p>
 
@@ -74,14 +74,14 @@ Observação: as imagens no README aparecem diretamente no GitHub (independente 
 ### Outras telas (já no projeto)
 Para já mostrar o que existe hoje no repositório, você pode referenciar estas capturas:
 
-![Principal](assets/images/tela_principal_mobile.png)
-![Adicionar Lançamento](assets/images/tela_adicionar_lancamento_mobile.png)
-![Relatórios](assets/images/tela_relatorios_mobile.png)
-![Categorias](assets/images/tela_categorias_mobile.png)
-![Contas](assets/images/tela_contas_mobile.png)
-![Cadastro de Usuário](assets/images/tela_cadastro_usuario_mobile.png)
-![Recuperar Senha](assets/images/tela_recuperar_senha_mobile.png)
-![Ajustes](assets/images/tela_ajustes_mobile.png)
+![Principal](./assets/images/tela_principal_mobile.png)
+![Adicionar Lançamento](./assets/images/tela_adicionar_lancamento_mobile.png)
+![Relatórios](./assets/images/tela_relatorios_mobile.png)
+![Categorias](./assets/images/tela_categorias_mobile.png)
+![Contas](./assets/images/tela_contas_mobile.png)
+![Cadastro de Usuário](./assets/images/tela_cadastro_usuario_mobile.png)
+![Recuperar Senha](./assets/images/tela_recuperar_senha_mobile.png)
+![Ajustes](./assets/images/tela_ajustes_mobile.png)
 
 ## Publicação (GitHub Pages)
 - Já existe um workflow em `.github/workflows/deploy.yml` que compila e publica automaticamente na branch `gh-pages`.

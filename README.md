@@ -5,10 +5,17 @@
 
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/features/actions)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222?logo=github&logoColor=white)](https://pages.github.com/)
 
 [![Deploy Status](https://github.com/reinaldobarreto/fintrack360/actions/workflows/deploy.yml/badge.svg)](https://github.com/reinaldobarreto/fintrack360/actions/workflows/deploy.yml)
 
 Aplicativo Flutter para controle financeiro pessoal/familiar. Foco em mobile-first e teste rápido via web.
+
+## Overview
+- Stack principal: **Flutter/Dart** (mobile-first + build web para demo)
+- Deploy: **GitHub Pages** automatizado via **GitHub Actions**
+- Backend opcional: **Firebase** (Auth/Firestore)
+- Screenshots e assets padronizados em `assets/images/` (tela_*)
 
 ## Demo
 - `https://reinaldobarreto.github.io/fintrack360/` (será publicado automaticamente após o primeiro push para `main`).

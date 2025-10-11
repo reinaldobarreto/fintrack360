@@ -31,6 +31,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - name: Flutter version
         run: flutter --version
@@ -55,6 +56,9 @@ jobs:
         with:
           name: build_web_release_logs
           path: fintrack360/build_web_release.log
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact para Pages
         uses: actions/upload-pages-artifact@v3

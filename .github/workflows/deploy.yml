@@ -5,6 +5,11 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Garantir que os comandos rodem dentro do projeto Flutter
+defaults:
+  run:
+    working-directory: fintrack360
+
 # Permissões necessárias para Pages via Actions
 permissions:
   contents: read
@@ -49,12 +54,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build_web_release_logs
-          path: build_web_release.log
+          path: fintrack360/build_web_release.log
 
       - name: Upload artifact para Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/web
+          path: fintrack360/build/web
 
   deploy:
     environment:

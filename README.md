@@ -116,10 +116,30 @@ Para já mostrar o que existe hoje no repositório, você pode referenciar estas
 - Acesse: https://reinaldobarreto.github.io/fintrack360/
 - Na primeira visita, use “Pular login (demo local)” para avaliar rapidamente sem Firebase.
 
+<p>
+  <a href="https://reinaldobarreto.github.io/fintrack360/" target="_blank">
+    <img src="https://img.shields.io/badge/Demo%20Web-Abrir-2ea44f?style=for-the-badge&logo=google-chrome" alt="Demo Web" />
+  </a>
+  <a href="https://github.com/reinaldobarreto/fintrack360" target="_blank">
+    <img src="https://img.shields.io/badge/Reposit%C3%B3rio-GitHub-000000?style=for-the-badge&logo=github" alt="Repositório GitHub" />
+  </a>
+</p>
+
 ## 📌 Sobre o Projeto
 - App Flutter focado em Mobile (Android/iOS) com suporte a Web.
 - Para testes públicos (GitHub Pages), o login demo é local e não cria contas reais.
 - Login padrão disponível: `admin@fintrack.com` / `admin1234`.
+
+### Tecnologias (perfil)
+<p>
+  <a href="https://developer.mozilla.org/docs/Web/JavaScript" target="_blank"><img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=000" alt="JavaScript" /></a>
+  <a href="https://nodejs.org/" target="_blank"><img src="https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=fff" alt="Node.js" /></a>
+  <a href="https://angular.io/" target="_blank"><img src="https://img.shields.io/badge/Angular-DD0031?style=flat&logo=angular&logoColor=fff" alt="Angular" /></a>
+  <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=fff" alt="TypeScript" /></a>
+  <a href="https://react.dev/" target="_blank"><img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=000" alt="React" /></a>
+  <a href="https://developer.mozilla.org/docs/Web" target="_blank"><img src="https://img.shields.io/badge/Web-4285F4?style=flat&logo=google-chrome&logoColor=fff" alt="Web" /></a>
+  <a href="https://reactnative.dev/" target="_blank"><img src="https://img.shields.io/badge/React%20Native-61DAFB?style=flat&logo=react&logoColor=000" alt="React Native" /></a>
+</p>
 
 ## 🧪 Como o recrutador pode avaliar
 - Abra a Demo Web no link acima.

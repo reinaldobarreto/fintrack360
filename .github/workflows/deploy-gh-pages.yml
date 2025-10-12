@@ -29,6 +29,10 @@ jobs:
         run: flutter build web --release --dart-define=USE_LOCAL_DEMO_AUTH=true
         working-directory: fintrack360
 
+      - name: Fix base href for GitHub Pages
+        run: sed -i 's|<base href="/">|<base href="/fintrack360/">|' build/web/index.html
+        working-directory: fintrack360
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:

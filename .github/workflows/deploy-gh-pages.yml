@@ -26,11 +26,15 @@ jobs:
         working-directory: fintrack360
 
       - name: Build Web (demo local)
-        run: flutter build web --release --dart-define=USE_LOCAL_DEMO_AUTH=true
+        run: flutter build web --release --web-renderer html --pwa-strategy=none --dart-define=USE_LOCAL_DEMO_AUTH=true
         working-directory: fintrack360
 
       - name: Fix base href for GitHub Pages
         run: sed -i 's|<base href="/">|<base href="/fintrack360/">|' build/web/index.html
+        working-directory: fintrack360
+
+      - name: Show build output (for debugging)
+        run: ls -la build/web && sed -n '1,80p' build/web/index.html
         working-directory: fintrack360
 
       - name: Deploy to GitHub Pages

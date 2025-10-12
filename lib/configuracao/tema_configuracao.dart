@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class TemaConfiguracao {
   // Cores principais do tema
   static const Color corPrimaria = Colors.amber; // Âmbar para ações principais
-  static const Color corSecundaria = Colors.teal; // Turquesa para elementos secundários
+  static const Color corSecundaria =
+      Colors.teal; // Turquesa para elementos secundários
   static const Color corSucesso = Colors.green; // Verde para lucro/sucesso
   static const Color corErro = Colors.red; // Vermelho para "no vermelho"/erro
   static const Color corFundo = Color(0xFF121212); // Fundo escuro
@@ -17,18 +18,16 @@ class TemaConfiguracao {
     return ThemeData(
       brightness: Brightness.dark,
       useMaterial3: true,
-      
+
       // Esquema de cores
       colorScheme: const ColorScheme.dark(
         primary: corPrimaria,
         secondary: corSecundaria,
         surface: corSuperficie,
-        background: corFundo,
         error: corErro,
         onPrimary: Colors.black,
         onSecondary: Colors.white,
         onSurface: corTexto,
-        onBackground: corTexto,
         onError: Colors.white,
       ),
 

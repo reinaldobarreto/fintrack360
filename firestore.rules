@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+
+    // Usuários: cada usuário gerencia seu próprio documento
+    match /usuarios/{uid} {
+      allow create: if signedIn() && request.auth.uid == uid;
+      allow read, update: if signedIn() && request.auth.uid == uid;
+    }
+
+    // Categorias padrão: leitura pública
+    match /categorias/{id} {
+      allow read: if true;
+      // Escrita somente para quem criou (quando houver idUsuarioCriador)
+      allow write: if signedIn() && request.auth.uid == (request.resource.data.idUsuarioCriador ?? resource.data.idUsuarioCriador);
+    }
+
+    // Contas: pertencem ao usuário
+    match /contas/{id} {
+      allow read, write: if signedIn() && (
+        request.auth.uid == (request.resource.data.idUsuario ?? resource.data.idUsuario)
+      );
+    }
+  }
+}

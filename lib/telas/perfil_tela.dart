@@ -25,7 +25,7 @@ class PerfilTela extends StatelessWidget {
   }
 
   Widget _buildNaoAutenticado(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         'Usuário não autenticado',
         style: TextStyle(color: TemaConfiguracao.corTextoSecundario),
@@ -48,7 +48,10 @@ class PerfilTela extends StatelessWidget {
                 backgroundColor: TemaConfiguracao.corSecundaria,
                 child: Text(
                   usuario.nome.substring(0, 1).toUpperCase(),
-                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22),
                 ),
               ),
               const SizedBox(width: 12),
@@ -57,21 +60,25 @@ class PerfilTela extends StatelessWidget {
                 children: [
                   Text(
                     usuario.nome,
-                    style: TextStyle(color: TemaConfiguracao.corTexto, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        color: TemaConfiguracao.corTexto,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
                   ),
                   Text(
                     usuario.email,
-                    style: TextStyle(color: TemaConfiguracao.corTextoSecundario),
+                    style: const TextStyle(
+                        color: TemaConfiguracao.corTextoSecundario),
                   ),
                 ],
               ),
             ],
           ),
-
           const SizedBox(height: 24),
-          Text(
+          const Text(
             'Informações',
-            style: TextStyle(color: TemaConfiguracao.corTexto, fontWeight: FontWeight.w600),
+            style: TextStyle(
+                color: TemaConfiguracao.corTexto, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           TextField(
@@ -81,28 +88,27 @@ class PerfilTela extends StatelessWidget {
           const SizedBox(height: 8),
           TextField(
             readOnly: true,
-            decoration: InputDecoration(labelText: 'Email', hintText: usuario.email),
+            decoration:
+                InputDecoration(labelText: 'Email', hintText: usuario.email),
           ),
-
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Dados atualizados'),
+                const SnackBar(
+                  content: Text('Dados atualizados'),
                   backgroundColor: TemaConfiguracao.corSucesso,
                 ),
               );
             },
             child: const Text('Salvar alterações'),
           ),
-
           const SizedBox(height: 16),
           OutlinedButton(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Link para alterar senha enviado'),
+                const SnackBar(
+                  content: Text('Link para alterar senha enviado'),
                   backgroundColor: TemaConfiguracao.corPrimaria,
                 ),
               );

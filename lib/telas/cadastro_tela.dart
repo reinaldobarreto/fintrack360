@@ -37,8 +37,9 @@ class _CadastroTelaState extends State<CadastroTela> {
   Future<void> _fazerCadastro() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final authProvedor = Provider.of<AutenticacaoProvedor>(context, listen: false);
-    
+    final authProvedor =
+        Provider.of<AutenticacaoProvedor>(context, listen: false);
+
     final sucesso = await authProvedor.cadastrarUsuario(
       nome: _nomeController.text.trim(),
       email: _emailController.text.trim(),
@@ -81,33 +82,32 @@ class _CadastroTelaState extends State<CadastroTela> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
-              
+
               // Título e subtítulo
               Center(
                 child: Column(
                   children: [
                     Text(
                       'Bem-vindo!',
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        color: TemaConfiguracao.corTexto,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: TemaConfiguracao.corTexto,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
-                    
                     const SizedBox(height: 8),
-                    
                     Text(
                       'Crie sua conta para começar',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: TemaConfiguracao.corTextoSecundario,
-                      ),
+                            color: TemaConfiguracao.corTextoSecundario,
+                          ),
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               // Alerta de erro (quando houver)
               Consumer<AutenticacaoProvedor>(
                 builder: (context, authProvedor, child) {
@@ -126,12 +126,14 @@ class _CadastroTelaState extends State<CadastroTela> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.error_outline, color: TemaConfiguracao.corErro),
+                        const Icon(Icons.error_outline,
+                            color: TemaConfiguracao.corErro),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             mensagem,
-                            style: TextStyle(color: TemaConfiguracao.corErro),
+                            style: const TextStyle(
+                                color: TemaConfiguracao.corErro),
                           ),
                         ),
                       ],
@@ -155,12 +157,13 @@ class _CadastroTelaState extends State<CadastroTela> {
                       ),
                       validator: MultiValidator([
                         RequiredValidator(errorText: 'Nome é obrigatório'),
-                        MinLengthValidator(2, errorText: 'Nome deve ter pelo menos 2 caracteres'),
-                      ]),
+                        MinLengthValidator(2,
+                            errorText: 'Nome deve ter pelo menos 2 caracteres'),
+                      ]).call,
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Campo de email
                     TextFormField(
                       controller: _emailController,
@@ -172,11 +175,11 @@ class _CadastroTelaState extends State<CadastroTela> {
                       validator: MultiValidator([
                         RequiredValidator(errorText: 'Email é obrigatório'),
                         EmailValidator(errorText: 'Digite um email válido'),
-                      ]),
+                      ]).call,
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Campo de senha
                     TextFormField(
                       controller: _senhaController,
@@ -186,7 +189,9 @@ class _CadastroTelaState extends State<CadastroTela> {
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _senhaVisivel ? Icons.visibility : Icons.visibility_off,
+                            _senhaVisivel
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {
@@ -197,12 +202,14 @@ class _CadastroTelaState extends State<CadastroTela> {
                       ),
                       validator: MultiValidator([
                         RequiredValidator(errorText: 'Senha é obrigatória'),
-                        MinLengthValidator(6, errorText: 'Senha deve ter pelo menos 6 caracteres'),
-                      ]),
+                        MinLengthValidator(6,
+                            errorText:
+                                'Senha deve ter pelo menos 6 caracteres'),
+                      ]).call,
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Campo de confirmar senha
                     TextFormField(
                       controller: _confirmarSenhaController,
@@ -212,7 +219,9 @@ class _CadastroTelaState extends State<CadastroTela> {
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _confirmarSenhaVisivel ? Icons.visibility : Icons.visibility_off,
+                            _confirmarSenhaVisivel
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {
@@ -231,9 +240,9 @@ class _CadastroTelaState extends State<CadastroTela> {
                         return null;
                       },
                     ),
-                    
+
                     const SizedBox(height: 40),
-                    
+
                     // Botão de cadastro
                     Consumer<AutenticacaoProvedor>(
                       builder: (context, authProvedor, child) {
@@ -241,14 +250,16 @@ class _CadastroTelaState extends State<CadastroTela> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: authProvedor.carregando ? null : _fazerCadastro,
+                            onPressed:
+                                authProvedor.carregando ? null : _fazerCadastro,
                             child: authProvedor.carregando
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.black),
                                     ),
                                   )
                                 : const Text('Criar Conta'),
@@ -256,14 +267,14 @@ class _CadastroTelaState extends State<CadastroTela> {
                         );
                       },
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Link para voltar ao login
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           'Já tem uma conta? ',
                           style: TextStyle(
                             color: TemaConfiguracao.corTextoSecundario,
@@ -273,7 +284,7 @@ class _CadastroTelaState extends State<CadastroTela> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: Text(
+                          child: const Text(
                             'Fazer login',
                             style: TextStyle(
                               color: TemaConfiguracao.corSecundaria,
@@ -286,9 +297,9 @@ class _CadastroTelaState extends State<CadastroTela> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               // Termos de uso
               Container(
                 padding: const EdgeInsets.all(16),
@@ -296,7 +307,7 @@ class _CadastroTelaState extends State<CadastroTela> {
                   color: TemaConfiguracao.corSuperficie,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: const Text(
                   'Ao criar uma conta, você concorda com nossos Termos de Uso e Política de Privacidade.',
                   style: TextStyle(
                     color: TemaConfiguracao.corTextoSecundario,

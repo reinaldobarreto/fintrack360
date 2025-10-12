@@ -78,7 +78,8 @@ class _CategoriasTelaState extends State<CategoriasTela> {
     // Aplica busca e filtro
     final textoBusca = _buscaController.text.trim().toLowerCase();
     final categoriasFiltradas = _categorias.where((c) {
-      final passaBusca = textoBusca.isEmpty || c.nome.toLowerCase().contains(textoBusca);
+      final passaBusca =
+          textoBusca.isEmpty || c.nome.toLowerCase().contains(textoBusca);
       final passaFiltroAtivas = !_filtroAtivas || c.ativa;
       return passaBusca && passaFiltroAtivas;
     }).toList();
@@ -125,12 +126,16 @@ class _CategoriasTelaState extends State<CategoriasTela> {
                     label: Text('Total: ${_categorias.length}'),
                   ),
                   Chip(
-                    avatar: const Icon(Icons.check_circle, size: 18, color: Colors.green),
-                    label: Text('Ativas: ${_categorias.where((c) => c.ativa).length}'),
+                    avatar: const Icon(Icons.check_circle,
+                        size: 18, color: Colors.green),
+                    label: Text(
+                        'Ativas: ${_categorias.where((c) => c.ativa).length}'),
                   ),
                   Chip(
-                    avatar: const Icon(Icons.cancel, size: 18, color: Colors.red),
-                    label: Text('Inativas: ${_categorias.where((c) => !c.ativa).length}'),
+                    avatar:
+                        const Icon(Icons.cancel, size: 18, color: Colors.red),
+                    label: Text(
+                        'Inativas: ${_categorias.where((c) => !c.ativa).length}'),
                   ),
                 ],
               ),
@@ -155,26 +160,29 @@ class _CategoriasTelaState extends State<CategoriasTela> {
                         ),
                         title: Text(
                           categoria.nome,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: TemaConfiguracao.corTexto,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         subtitle: Text(
                           categoria.descricao ?? '',
-                          style: TextStyle(color: TemaConfiguracao.corTextoSecundario),
+                          style: const TextStyle(
+                              color: TemaConfiguracao.corTextoSecundario),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Switch(
                               value: categoria.ativa,
-                              activeColor: TemaConfiguracao.corPrimaria,
+                              activeThumbColor: TemaConfiguracao.corPrimaria,
                               onChanged: (v) {
                                 setState(() {
-                                  final idx = _categorias.indexWhere((c) => c.id == categoria.id);
+                                  final idx = _categorias
+                                      .indexWhere((c) => c.id == categoria.id);
                                   if (idx >= 0) {
-                                    _categorias[idx] = categoria.copiarCom(ativa: v);
+                                    _categorias[idx] =
+                                        categoria.copiarCom(ativa: v);
                                   }
                                 });
                               },
@@ -223,81 +231,93 @@ class _CategoriasTelaState extends State<CategoriasTela> {
         title: const Text('Nova Categoria'),
         content: SingleChildScrollView(
           child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nomeController,
-              decoration: const InputDecoration(labelText: 'Nome'),
-            ),
-            TextField(
-              controller: descricaoController,
-              decoration: const InputDecoration(labelText: 'Descrição'),
-            ),
-            const SizedBox(height: 12),
-            // Seleção de cor
-            SizedBox(
-              height: 48,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _coresDisponiveis.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final cor = _coresDisponiveis[index];
-                  final selecionada = corSelecionada == cor;
-                  return GestureDetector(
-                    onTap: () => setState(() => corSelecionada = cor),
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: cor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: selecionada ? Colors.white : Colors.transparent,
-                          width: 2,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nomeController,
+                decoration: const InputDecoration(labelText: 'Nome'),
+              ),
+              TextField(
+                controller: descricaoController,
+                decoration: const InputDecoration(labelText: 'Descrição'),
+              ),
+              const SizedBox(height: 12),
+              // Seleção de cor
+              SizedBox(
+                height: 48,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _coresDisponiveis.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final cor = _coresDisponiveis[index];
+                    final selecionada = corSelecionada == cor;
+                    return GestureDetector(
+                      onTap: () => setState(() => corSelecionada = cor),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: cor,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color:
+                                selecionada ? Colors.white : Colors.transparent,
+                            width: 2,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Seleção de ícone
-            SizedBox(
-              height: 84,
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 6,
-                  mainAxisSpacing: 4,
-                  crossAxisSpacing: 4,
+                    );
+                  },
                 ),
-                itemCount: _iconesDisponiveis.length,
-                itemBuilder: (context, index) {
-                  final icone = _iconesDisponiveis[index];
-                  final selecionado = iconeSelecionado == icone;
-                  return InkWell(
-                    onTap: () => setState(() => iconeSelecionado = icone),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: selecionado ? corSelecionada.withOpacity(0.2) : TemaConfiguracao.corSuperficie,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: selecionado ? corSelecionada : Colors.transparent,
-                        ),
-                      ),
-                      child: Icon(icone, color: selecionado ? corSelecionada : TemaConfiguracao.corTexto),
-                    ),
-                  );
-                },
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              // Seleção de ícone
+              SizedBox(
+                height: 84,
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 6,
+                    mainAxisSpacing: 4,
+                    crossAxisSpacing: 4,
+                  ),
+                  itemCount: _iconesDisponiveis.length,
+                  itemBuilder: (context, index) {
+                    final icone = _iconesDisponiveis[index];
+                    final selecionado = iconeSelecionado == icone;
+                    return InkWell(
+                      onTap: () => setState(() => iconeSelecionado = icone),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: selecionado
+                              ? corSelecionada.withOpacity(0.2)
+                              : TemaConfiguracao.corSuperficie,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: selecionado
+                                ? corSelecionada
+                                : Colors.transparent,
+                          ),
+                        ),
+                        child: Icon(icone,
+                            color: selecionado
+                                ? corSelecionada
+                                : TemaConfiguracao.corTexto),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Adicionar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar')),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Adicionar')),
         ],
       ),
     );
@@ -306,13 +326,17 @@ class _CategoriasTelaState extends State<CategoriasTela> {
       // Validações simples
       if (nome.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('Informe um nome para a categoria'), backgroundColor: TemaConfiguracao.corErro),
+          const SnackBar(
+              content: Text('Informe um nome para a categoria'),
+              backgroundColor: TemaConfiguracao.corErro),
         );
         return;
       }
       if (_categorias.any((c) => c.nome.toLowerCase() == nome.toLowerCase())) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('Já existe uma categoria com esse nome'), backgroundColor: TemaConfiguracao.corErro),
+          const SnackBar(
+              content: Text('Já existe uma categoria com esse nome'),
+              backgroundColor: TemaConfiguracao.corErro),
         );
         return;
       }
@@ -331,14 +355,17 @@ class _CategoriasTelaState extends State<CategoriasTela> {
         );
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Categoria adicionada'), backgroundColor: TemaConfiguracao.corSucesso),
+        const SnackBar(
+            content: Text('Categoria adicionada'),
+            backgroundColor: TemaConfiguracao.corSucesso),
       );
     }
   }
 
   Future<void> _editarCategoria(Categoria categoria) async {
     final nomeController = TextEditingController(text: categoria.nome);
-    final descricaoController = TextEditingController(text: categoria.descricao ?? '');
+    final descricaoController =
+        TextEditingController(text: categoria.descricao ?? '');
     Color corSelecionada = categoria.cor;
     IconData iconeSelecionado = categoria.icone;
     final ok = await showDialog<bool>(
@@ -347,79 +374,91 @@ class _CategoriasTelaState extends State<CategoriasTela> {
         title: const Text('Editar Categoria'),
         content: SingleChildScrollView(
           child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nomeController,
-              decoration: const InputDecoration(labelText: 'Nome'),
-            ),
-            TextField(
-              controller: descricaoController,
-              decoration: const InputDecoration(labelText: 'Descrição'),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 48,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _coresDisponiveis.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final cor = _coresDisponiveis[index];
-                  final selecionada = corSelecionada == cor;
-                  return GestureDetector(
-                    onTap: () => setState(() => corSelecionada = cor),
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: cor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: selecionada ? Colors.white : Colors.transparent,
-                          width: 2,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nomeController,
+                decoration: const InputDecoration(labelText: 'Nome'),
+              ),
+              TextField(
+                controller: descricaoController,
+                decoration: const InputDecoration(labelText: 'Descrição'),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 48,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _coresDisponiveis.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final cor = _coresDisponiveis[index];
+                    final selecionada = corSelecionada == cor;
+                    return GestureDetector(
+                      onTap: () => setState(() => corSelecionada = cor),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: cor,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color:
+                                selecionada ? Colors.white : Colors.transparent,
+                            width: 2,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 84,
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 6,
-                  mainAxisSpacing: 4,
-                  crossAxisSpacing: 4,
+                    );
+                  },
                 ),
-                itemCount: _iconesDisponiveis.length,
-                itemBuilder: (context, index) {
-                  final icone = _iconesDisponiveis[index];
-                  final selecionado = iconeSelecionado == icone;
-                  return InkWell(
-                    onTap: () => setState(() => iconeSelecionado = icone),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: selecionado ? corSelecionada.withOpacity(0.2) : TemaConfiguracao.corSuperficie,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: selecionado ? corSelecionada : Colors.transparent,
-                        ),
-                      ),
-                      child: Icon(icone, color: selecionado ? corSelecionada : TemaConfiguracao.corTexto),
-                    ),
-                  );
-                },
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 84,
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 6,
+                    mainAxisSpacing: 4,
+                    crossAxisSpacing: 4,
+                  ),
+                  itemCount: _iconesDisponiveis.length,
+                  itemBuilder: (context, index) {
+                    final icone = _iconesDisponiveis[index];
+                    final selecionado = iconeSelecionado == icone;
+                    return InkWell(
+                      onTap: () => setState(() => iconeSelecionado = icone),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: selecionado
+                              ? corSelecionada.withOpacity(0.2)
+                              : TemaConfiguracao.corSuperficie,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: selecionado
+                                ? corSelecionada
+                                : Colors.transparent,
+                          ),
+                        ),
+                        child: Icon(icone,
+                            color: selecionado
+                                ? corSelecionada
+                                : TemaConfiguracao.corTexto),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Salvar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar')),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Salvar')),
         ],
       ),
     );
@@ -436,7 +475,9 @@ class _CategoriasTelaState extends State<CategoriasTela> {
         }
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Categoria atualizada'), backgroundColor: TemaConfiguracao.corSucesso),
+        const SnackBar(
+            content: Text('Categoria atualizada'),
+            backgroundColor: TemaConfiguracao.corSucesso),
       );
     }
   }
@@ -448,9 +489,12 @@ class _CategoriasTelaState extends State<CategoriasTela> {
         title: const Text('Excluir Categoria'),
         content: Text('Deseja excluir "${categoria.nome}"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: TemaConfiguracao.corErro),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: TemaConfiguracao.corErro),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Excluir'),
           ),
@@ -462,7 +506,9 @@ class _CategoriasTelaState extends State<CategoriasTela> {
         _categorias.removeWhere((c) => c.id == categoria.id);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Categoria excluída'), backgroundColor: TemaConfiguracao.corSucesso),
+        const SnackBar(
+            content: Text('Categoria excluída'),
+            backgroundColor: TemaConfiguracao.corSucesso),
       );
     }
   }

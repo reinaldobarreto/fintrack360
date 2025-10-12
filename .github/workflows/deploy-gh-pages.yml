@@ -1,0 +1,37 @@
+name: Deploy Flutter Web to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Enable Flutter Web
+        run: flutter config --enable-web
+        working-directory: fintrack360
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: fintrack360
+
+      - name: Build Web (demo local)
+        run: flutter build web --release --dart-define=USE_LOCAL_DEMO_AUTH=true
+        working-directory: fintrack360
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: fintrack360/build/web
+          force_orphan: true

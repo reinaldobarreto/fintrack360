@@ -16,7 +16,7 @@ class DashboardTela extends StatefulWidget {
 
 class _DashboardTelaState extends State<DashboardTela> {
   String _periodoSelecionado = 'Este mês';
-  
+
   final List<String> _periodos = [
     'Esta semana',
     'Este mês',
@@ -34,9 +34,8 @@ class _DashboardTelaState extends State<DashboardTela> {
   Widget build(BuildContext context) {
     final saldoPositivo = _saldoAtual >= 0;
     final statusFinanceiro = saldoPositivo ? 'Lucro' : 'No vermelho';
-    final corStatus = saldoPositivo 
-        ? TemaConfiguracao.corSucesso 
-        : TemaConfiguracao.corErro;
+    final corStatus =
+        saldoPositivo ? TemaConfiguracao.corSucesso : TemaConfiguracao.corErro;
 
     return Scaffold(
       backgroundColor: TemaConfiguracao.corFundo,
@@ -49,32 +48,32 @@ class _DashboardTelaState extends State<DashboardTela> {
             children: [
               // Seletor de período
               _buildSeletorPeriodo(),
-              
+
               const SizedBox(height: 20),
-              
+
               // Status financeiro
               _buildStatusFinanceiro(statusFinanceiro, corStatus),
-              
+
               const SizedBox(height: 20),
-              
+
               // KPIs principais
               _buildKPIsPrincipais(),
-              
+
               const SizedBox(height: 30),
-              
+
               // Gráfico de receitas vs despesas
               _buildGraficoReceitasDespesas(),
-              
+
               const SizedBox(height: 30),
-              
+
               // Gráfico de categorias
               _buildGraficoCategorias(),
-              
+
               const SizedBox(height: 30),
-              
+
               // Progresso da meta
               _buildProgressoMeta(),
-              
+
               const SizedBox(height: 20),
             ],
           ),
@@ -98,11 +97,11 @@ class _DashboardTelaState extends State<DashboardTela> {
         child: DropdownButton<String>(
           value: _periodoSelecionado,
           isExpanded: true,
-          icon: Icon(
+          icon: const Icon(
             Icons.keyboard_arrow_down,
             color: TemaConfiguracao.corPrimaria,
           ),
-          style: TextStyle(
+          style: const TextStyle(
             color: TemaConfiguracao.corTexto,
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -161,13 +160,13 @@ class _DashboardTelaState extends State<DashboardTela> {
           const SizedBox(height: 4),
           Text(
             'R\$ ${_saldoAtual.toStringAsFixed(2).replaceAll('.', ',')}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: TemaConfiguracao.corTexto,
             ),
           ),
-          Text(
+          const Text(
             'Saldo atual',
             style: TextStyle(
               fontSize: 14,
@@ -217,7 +216,7 @@ class _DashboardTelaState extends State<DashboardTela> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Receitas vs Despesas',
             style: TextStyle(
               fontSize: 18,
@@ -246,7 +245,7 @@ class _DashboardTelaState extends State<DashboardTela> {
         color: TemaConfiguracao.corSuperficie,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -257,8 +256,8 @@ class _DashboardTelaState extends State<DashboardTela> {
               color: TemaConfiguracao.corTexto,
             ),
           ),
-          const SizedBox(height: 20),
-          const SizedBox(
+          SizedBox(height: 20),
+          SizedBox(
             height: 200,
             child: GraficoPizza(),
           ),
@@ -284,7 +283,7 @@ class _DashboardTelaState extends State<DashboardTela> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Meta Mensal',
                 style: TextStyle(
                   fontSize: 18,
@@ -294,7 +293,7 @@ class _DashboardTelaState extends State<DashboardTela> {
               ),
               Text(
                 '${progressoPercentual.toInt()}%',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: TemaConfiguracao.corPrimaria,
@@ -305,8 +304,10 @@ class _DashboardTelaState extends State<DashboardTela> {
           const SizedBox(height: 12),
           LinearProgressIndicator(
             value: progresso,
-            backgroundColor: TemaConfiguracao.corTextoSecundario.withOpacity(0.2),
-            valueColor: AlwaysStoppedAnimation<Color>(TemaConfiguracao.corPrimaria),
+            backgroundColor:
+                TemaConfiguracao.corTextoSecundario.withOpacity(0.2),
+            valueColor: const AlwaysStoppedAnimation<Color>(
+                TemaConfiguracao.corPrimaria),
             minHeight: 8,
           ),
           const SizedBox(height: 12),
@@ -315,14 +316,14 @@ class _DashboardTelaState extends State<DashboardTela> {
             children: [
               Text(
                 'R\$ ${_totalReceitas.toStringAsFixed(2).replaceAll('.', ',')}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: TemaConfiguracao.corTextoSecundario,
                 ),
               ),
               Text(
                 'R\$ ${_metaMensal.toStringAsFixed(2).replaceAll('.', ',')}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: TemaConfiguracao.corTextoSecundario,
                 ),
@@ -338,10 +339,10 @@ class _DashboardTelaState extends State<DashboardTela> {
   Future<void> _atualizarDados() async {
     // Simula carregamento de dados
     await Future.delayed(const Duration(seconds: 1));
-    
+
     // Aqui seria implementada a lógica para buscar dados reais
     // baseado no período selecionado
-    
+
     if (mounted) {
       setState(() {
         // Dados atualizados

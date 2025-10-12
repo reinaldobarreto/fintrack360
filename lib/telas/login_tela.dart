@@ -25,6 +25,17 @@ class _LoginTelaState extends State<LoginTela> {
   bool _senhaVisivel = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Limpa qualquer mensagem de erro antiga ao entrar na tela de login
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvedor =
+          Provider.of<AutenticacaoProvedor>(context, listen: false);
+      authProvedor.limparMensagemErro();
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _senhaController.dispose();
@@ -35,8 +46,9 @@ class _LoginTelaState extends State<LoginTela> {
   Future<void> _fazerLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final authProvedor = Provider.of<AutenticacaoProvedor>(context, listen: false);
-    
+    final authProvedor =
+        Provider.of<AutenticacaoProvedor>(context, listen: false);
+
     final sucesso = await authProvedor.fazerLogin(
       _emailController.text.trim(),
       _senhaController.text,
@@ -73,7 +85,7 @@ class _LoginTelaState extends State<LoginTela> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 60),
-              
+
               // Logo e título
               Center(
                 child: Column(
@@ -100,7 +112,8 @@ class _LoginTelaState extends State<LoginTela> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: TemaConfiguracao.corPrimaria.withOpacity(0.3),
+                            color:
+                                TemaConfiguracao.corPrimaria.withOpacity(0.3),
                             blurRadius: 15,
                             spreadRadius: 3,
                           ),
@@ -112,31 +125,32 @@ class _LoginTelaState extends State<LoginTela> {
                         color: Colors.black,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     Text(
                       'FinTrack360',
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        color: TemaConfiguracao.corTexto,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: TemaConfiguracao.corTexto,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     Text(
                       'Entre na sua conta',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: TemaConfiguracao.corTextoSecundario,
-                      ),
+                            color: TemaConfiguracao.corTextoSecundario,
+                          ),
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 50),
-              
+
               // Alerta de erro (quando houver)
               Consumer<AutenticacaoProvedor>(
                 builder: (context, authProvedor, child) {
@@ -155,12 +169,14 @@ class _LoginTelaState extends State<LoginTela> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.error_outline, color: TemaConfiguracao.corErro),
+                        const Icon(Icons.error_outline,
+                            color: TemaConfiguracao.corErro),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             mensagem,
-                            style: TextStyle(color: TemaConfiguracao.corErro),
+                            style: const TextStyle(
+                                color: TemaConfiguracao.corErro),
                           ),
                         ),
                       ],
@@ -185,11 +201,11 @@ class _LoginTelaState extends State<LoginTela> {
                       validator: MultiValidator([
                         RequiredValidator(errorText: 'Email é obrigatório'),
                         EmailValidator(errorText: 'Digite um email válido'),
-                      ]),
+                      ]).call,
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Campo de senha
                     TextFormField(
                       controller: _senhaController,
@@ -199,7 +215,9 @@ class _LoginTelaState extends State<LoginTela> {
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _senhaVisivel ? Icons.visibility : Icons.visibility_off,
+                            _senhaVisivel
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {
@@ -208,11 +226,13 @@ class _LoginTelaState extends State<LoginTela> {
                           },
                         ),
                       ),
-                      validator: RequiredValidator(errorText: 'Senha é obrigatória'),
+                      validator:
+                          RequiredValidator(errorText: 'Senha é obrigatória')
+                              .call,
                     ),
-                    
+
                     const SizedBox(height: 30),
-                    
+
                     // Botão de login
                     Consumer<AutenticacaoProvedor>(
                       builder: (context, authProvedor, child) {
@@ -220,14 +240,16 @@ class _LoginTelaState extends State<LoginTela> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: authProvedor.carregando ? null : _fazerLogin,
+                            onPressed:
+                                authProvedor.carregando ? null : _fazerLogin,
                             child: authProvedor.carregando
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.black),
                                     ),
                                   )
                                 : const Text('Entrar'),
@@ -235,9 +257,9 @@ class _LoginTelaState extends State<LoginTela> {
                         );
                       },
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Link para recuperar senha
                     TextButton(
                       onPressed: () {
@@ -247,26 +269,27 @@ class _LoginTelaState extends State<LoginTela> {
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Esqueceu sua senha?',
                         style: TextStyle(
                           color: TemaConfiguracao.corSecundaria,
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 40),
-                    
+
                     // Divisor
                     Row(
                       children: [
                         Expanded(
                           child: Divider(
-                            color: TemaConfiguracao.corTextoSecundario.withOpacity(0.3),
+                            color: TemaConfiguracao.corTextoSecundario
+                                .withOpacity(0.3),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             'ou',
                             style: TextStyle(
@@ -276,14 +299,15 @@ class _LoginTelaState extends State<LoginTela> {
                         ),
                         Expanded(
                           child: Divider(
-                            color: TemaConfiguracao.corTextoSecundario.withOpacity(0.3),
+                            color: TemaConfiguracao.corTextoSecundario
+                                .withOpacity(0.3),
                           ),
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Botão para criar conta
                     SizedBox(
                       width: double.infinity,
@@ -300,22 +324,24 @@ class _LoginTelaState extends State<LoginTela> {
                       ),
                     ),
 
-                    // Botão para pular login em modo debug
-                    if (kDebugMode) ...[
+                    // Botão para pular login (também habilitado na Web/GitHub Pages)
+                    if (kDebugMode || (Uri.base.host.toLowerCase().endsWith('github.io'))) ...[
                       const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
                         height: 44,
                         child: TextButton.icon(
                           icon: const Icon(Icons.developer_mode),
-                          label: const Text('Pular login (debug)'),
+                          label: const Text('Pular login (demo local)'),
                           onPressed: () async {
-                            final authProvedor = Provider.of<AutenticacaoProvedor>(context, listen: false);
+                            final authProvedor =
+                                Provider.of<AutenticacaoProvedor>(context,
+                                    listen: false);
                             await authProvedor.loginDemo();
                             if (!mounted) return;
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                builder: (context) => PrincipalTela(
+                                builder: (context) => const PrincipalTela(
                                   sucessoMensagem: 'Login demo ativo',
                                 ),
                               ),
@@ -327,9 +353,9 @@ class _LoginTelaState extends State<LoginTela> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               // Informação sobre conta admin padrão
               Container(
                 padding: const EdgeInsets.all(16),
@@ -340,7 +366,7 @@ class _LoginTelaState extends State<LoginTela> {
                     color: TemaConfiguracao.corPrimaria.withOpacity(0.3),
                   ),
                 ),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -350,7 +376,7 @@ class _LoginTelaState extends State<LoginTela> {
                           color: TemaConfiguracao.corPrimaria,
                           size: 20,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           'Conta Administrador Padrão',
                           style: TextStyle(
@@ -360,7 +386,7 @@ class _LoginTelaState extends State<LoginTela> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Email: admin@fintrack.com\nSenha: admin123',
                       style: TextStyle(

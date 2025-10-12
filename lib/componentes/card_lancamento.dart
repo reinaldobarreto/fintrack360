@@ -18,7 +18,8 @@ class CardLancamento extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ehReceita = lancamento.ehReceita;
-    final cor = ehReceita ? TemaConfiguracao.corSucesso : TemaConfiguracao.corErro;
+    final cor =
+        ehReceita ? TemaConfiguracao.corSucesso : TemaConfiguracao.corErro;
     final icone = ehReceita ? Icons.arrow_upward : Icons.arrow_downward;
 
     return Card(
@@ -52,9 +53,9 @@ class CardLancamento extends StatelessWidget {
                   size: 24,
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Informações do lançamento
               Expanded(
                 child: Column(
@@ -63,7 +64,7 @@ class CardLancamento extends StatelessWidget {
                     // Descrição
                     Text(
                       lancamento.descricao,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: TemaConfiguracao.corTexto,
@@ -71,24 +72,25 @@ class CardLancamento extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    
+
                     const SizedBox(height: 4),
-                    
+
                     // Data
                     Text(
                       lancamento.dataFormatada,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: TemaConfiguracao.corTextoSecundario,
                       ),
                     ),
-                    
+
                     // Observações (se houver)
-                    if (lancamento.observacoes != null && lancamento.observacoes!.isNotEmpty) ...[
+                    if (lancamento.observacoes != null &&
+                        lancamento.observacoes!.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         lancamento.observacoes!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: TemaConfiguracao.corTextoSecundario,
                           fontStyle: FontStyle.italic,
@@ -100,9 +102,9 @@ class CardLancamento extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Valor e ações
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -116,9 +118,9 @@ class CardLancamento extends StatelessWidget {
                       color: cor,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Botão de excluir
                   if (onDelete != null)
                     InkWell(
@@ -126,7 +128,7 @@ class CardLancamento extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        child: Icon(
+                        child: const Icon(
                           Icons.delete_outline,
                           size: 18,
                           color: TemaConfiguracao.corTextoSecundario,

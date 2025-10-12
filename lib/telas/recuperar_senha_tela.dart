@@ -29,9 +29,11 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
   Future<void> _enviarEmailRecuperacao() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final authProvedor = Provider.of<AutenticacaoProvedor>(context, listen: false);
-    
-    final sucesso = await authProvedor.enviarEmailRecuperacao(_emailController.text.trim());
+    final authProvedor =
+        Provider.of<AutenticacaoProvedor>(context, listen: false);
+
+    final sucesso =
+        await authProvedor.enviarEmailRecuperacao(_emailController.text.trim());
 
     if (!mounted) return;
 
@@ -39,7 +41,7 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
       setState(() {
         _emailEnviado = true;
       });
-      
+
       MensagensUtil.mostrarSucesso(
         context,
         'Email de recuperação enviado com sucesso!',
@@ -68,7 +70,7 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 40),
-              
+
               // Ícone e título
               Center(
                 child: Column(
@@ -80,40 +82,37 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                         color: TemaConfiguracao.corSecundaria.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(40),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.lock_reset,
                         size: 40,
                         color: TemaConfiguracao.corSecundaria,
                       ),
                     ),
-                    
                     const SizedBox(height: 20),
-                    
                     Text(
                       _emailEnviado ? 'Email Enviado!' : 'Esqueceu sua senha?',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: TemaConfiguracao.corTexto,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: TemaConfiguracao.corTexto,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
-                    
                     const SizedBox(height: 12),
-                    
                     Text(
                       _emailEnviado
                           ? 'Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.'
                           : 'Digite seu email e enviaremos um link para redefinir sua senha.',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: TemaConfiguracao.corTextoSecundario,
-                      ),
+                            color: TemaConfiguracao.corTextoSecundario,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 50),
-              
+
               if (!_emailEnviado) ...[
                 // Formulário de recuperação
                 Form(
@@ -132,11 +131,11 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                         validator: MultiValidator([
                           RequiredValidator(errorText: 'Email é obrigatório'),
                           EmailValidator(errorText: 'Digite um email válido'),
-                        ]),
+                        ]).call,
                       ),
-                      
+
                       const SizedBox(height: 30),
-                      
+
                       // Botão de enviar
                       Consumer<AutenticacaoProvedor>(
                         builder: (context, authProvedor, child) {
@@ -144,14 +143,18 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: authProvedor.carregando ? null : _enviarEmailRecuperacao,
+                              onPressed: authProvedor.carregando
+                                  ? null
+                                  : _enviarEmailRecuperacao,
                               child: authProvedor.carregando
                                   ? const SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.black),
                                       ),
                                     )
                                   : const Text('Enviar Email'),
@@ -173,7 +176,9 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                           width: double.infinity,
                           height: 50,
                           child: OutlinedButton(
-                            onPressed: authProvedor.carregando ? null : _enviarEmailRecuperacao,
+                            onPressed: authProvedor.carregando
+                                ? null
+                                : _enviarEmailRecuperacao,
                             child: authProvedor.carregando
                                 ? const SizedBox(
                                     width: 20,
@@ -187,9 +192,9 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                         );
                       },
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Informações adicionais
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -197,10 +202,11 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                         color: TemaConfiguracao.corSuperficie,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: TemaConfiguracao.corSecundaria.withOpacity(0.3),
+                          color:
+                              TemaConfiguracao.corSecundaria.withOpacity(0.3),
                         ),
                       ),
-                      child: Column(
+                      child: const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
@@ -210,7 +216,7 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                                 color: TemaConfiguracao.corSecundaria,
                                 size: 20,
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Text(
                                 'Dicas importantes:',
                                 style: TextStyle(
@@ -220,7 +226,7 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             '• Verifique também a pasta de spam\n'
                             '• O link expira em 1 hora\n'
@@ -236,14 +242,14 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                   ],
                 ),
               ],
-              
+
               const SizedBox(height: 40),
-              
+
               // Link para voltar ao login
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Lembrou da senha? ',
                     style: TextStyle(
                       color: TemaConfiguracao.corTextoSecundario,
@@ -253,7 +259,7 @@ class _RecuperarSenhaTelaState extends State<RecuperarSenhaTela> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text(
+                    child: const Text(
                       'Fazer login',
                       style: TextStyle(
                         color: TemaConfiguracao.corSecundaria,

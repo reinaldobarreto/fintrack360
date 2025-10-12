@@ -26,15 +26,19 @@ void main() async {
     await FirebaseConfiguracao.inicializar();
     print('Firebase inicializado com sucesso');
 
-    // Configura dados iniciais do sistema
-    final dadosIniciaisServico = DadosIniciaisServico();
-    final dadosConfigurados = await dadosIniciaisServico.dadosIniciaisConfigurados();
-    
-    if (!dadosConfigurados) {
-      print('Configurando dados iniciais...');
-      await dadosIniciaisServico.configurarDadosIniciais();
+    // Configura dados iniciais do sistema (apenas quando usando o emulador)
+    if (FirebaseConfiguracao.usarEmulador) {
+      final dadosIniciaisServico = DadosIniciaisServico();
+      final dadosConfigurados = await dadosIniciaisServico.dadosIniciaisConfigurados();
+
+      if (!dadosConfigurados) {
+        print('Configurando dados iniciais (emulador)...');
+        await dadosIniciaisServico.configurarDadosIniciais();
+      } else {
+        print('Dados iniciais já configurados (emulador)');
+      }
     } else {
-      print('Dados iniciais já configurados');
+      print('Seed e verificação de dados iniciais ignorados em produção.');
     }
 
     // Inicia a aplicação

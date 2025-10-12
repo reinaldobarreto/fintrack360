@@ -1,12 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import '../modelos/usuario.dart';
 import '../servicos/autenticacao_servico.dart';
+import '../servicos/autenticacao_local_servico.dart';
 
 /// Provedor de autenticação para gerenciamento de estado
 class AutenticacaoProvedor extends ChangeNotifier {
   final AutenticacaoServico _authServico = AutenticacaoServico();
-  
+  final AutenticacaoLocalServico _localServico = AutenticacaoLocalServico();
+
   Usuario? _usuarioAtual;
   bool _carregando = false;
   String? _mensagemErro;
@@ -21,6 +24,8 @@ class AutenticacaoProvedor extends ChangeNotifier {
   /// Construtor - configura listener do estado de autenticação
   AutenticacaoProvedor() {
     _configurarListenerAutenticacao();
+    // Restaura sessão local automaticamente quando em ambiente web GitHub Pages
+    _restaurarSessaoLocalSeWebDemo();
   }
 
   /// Configura o listener para mudanças no estado de autenticação
@@ -37,13 +42,42 @@ class AutenticacaoProvedor extends ChangeNotifier {
     });
   }
 
+  /// Detecta se deve usar o modo demo local (sem Firebase) na Web/GitHub Pages
+  bool get _usarModoLocalDemo {
+    if (kIsWeb) {
+      final host = Uri.base.host.toLowerCase();
+      if (host.endsWith('github.io')) return true;
+      // Permite ativar por dart-define
+      const bool porFlag = bool.fromEnvironment('USE_LOCAL_DEMO_AUTH', defaultValue: false);
+      return porFlag;
+    }
+    return const bool.fromEnvironment('USE_LOCAL_DEMO_AUTH', defaultValue: false);
+  }
+
+  /// Restaura sessão local se estiver em modo demo
+  Future<void> _restaurarSessaoLocalSeWebDemo() async {
+    if (_usarModoLocalDemo) {
+      try {
+        final usuario = await _localServico.carregarSessao();
+        if (usuario != null) {
+          _usuarioAtual = usuario;
+          notifyListeners();
+        }
+      } catch (_) {}
+    }
+  }
+
   /// Carrega os dados completos do usuário
   Future<void> _carregarDadosUsuario(String uid) async {
     try {
       _usuarioAtual = await _authServico.obterDadosUsuario(uid);
-      notifyListeners();
     } catch (e) {
-      _mensagemErro = 'Erro ao carregar dados do usuário: $e';
+      // Evita poluir a UI da tela de login com erros de carregamento automático
+      // quando a aplicação inicia ou restaura sessão.
+      if (kDebugMode) {
+        print('[Auth] Falha ao carregar dados do usuário: $e');
+      }
+    } finally {
       notifyListeners();
     }
   }
@@ -86,7 +120,7 @@ class AutenticacaoProvedor extends ChangeNotifier {
         email: email,
         senha: senha,
       );
-      
+
       if (usuario != null) {
         _usuarioAtual = usuario;
         _definirCarregando(false);
@@ -108,7 +142,7 @@ class AutenticacaoProvedor extends ChangeNotifier {
     _definirCarregando(true);
     _limparErro();
     try {
-      _usuarioAtual = Usuario(
+      final usuarioDemo = Usuario(
         id: 'demo',
         nome: 'Demo Admin',
         email: 'admin@fintrack.com',
@@ -117,6 +151,11 @@ class AutenticacaoProvedor extends ChangeNotifier {
         dataCriacao: DateTime.now(),
         dataUltimoAcesso: DateTime.now(),
       );
+      _usuarioAtual = usuarioDemo;
+      // Persiste sessão local para Web/GitHub Pages
+      if (_usarModoLocalDemo) {
+        await _localServico.salvarSessao(usuarioDemo);
+      }
     } finally {
       _definirCarregando(false);
       notifyListeners();
@@ -142,9 +181,13 @@ class AutenticacaoProvedor extends ChangeNotifier {
   /// Realiza logout
   Future<void> fazerLogout() async {
     _definirCarregando(true);
-    
+
     try {
       await _authServico.fazerLogout();
+      // Limpa sessão local quando em modo demo
+      if (_usarModoLocalDemo) {
+        await _localServico.limparSessao();
+      }
       _usuarioAtual = null;
     } catch (e) {
       _mensagemErro = 'Erro ao fazer logout: $e';
@@ -185,10 +228,5 @@ class AutenticacaoProvedor extends ChangeNotifier {
   /// Verifica se o usuário está ativo
   bool usuarioEstaAtivo() {
     return _usuarioAtual?.estaAtivo ?? false;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

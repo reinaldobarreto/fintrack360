@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../configuracao/firebase_configuracao.dart';
 import '../modelos/categoria.dart';
 import '../modelos/conta.dart';
 import '../servicos/autenticacao_servico.dart';
@@ -11,6 +12,11 @@ class DadosIniciaisServico {
   /// Configura todos os dados iniciais do sistema
   Future<void> configurarDadosIniciais() async {
     try {
+      // Em produção, não executar seed de dados iniciais
+      if (!FirebaseConfiguracao.usarEmulador) {
+        print('Seed de dados iniciais pulado (ambiente de produção).');
+        return;
+      }
       // 1. Criar usuário administrador padrão
       await _authServico.criarUsuarioAdminPadrao();
 

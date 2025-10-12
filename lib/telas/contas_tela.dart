@@ -55,55 +55,93 @@ class _ContasTelaState extends State<ContasTela> {
             final ehNegativa = conta.saldoInicial < 0;
             return Card(
               color: TemaConfiguracao.corSuperficie,
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: ehNegativa
-                      ? TemaConfiguracao.corErro.withOpacity(0.15)
-                      : TemaConfiguracao.corSucesso.withOpacity(0.15),
-                  child: Icon(
-                    ehNegativa ? Icons.trending_down : Icons.trending_up,
-                    color: ehNegativa ? TemaConfiguracao.corErro : TemaConfiguracao.corSucesso,
-                  ),
-                ),
-                title: Text(
-                  conta.nome,
-                  style: TextStyle(color: TemaConfiguracao.corTexto, fontWeight: FontWeight.w600),
-                ),
-                subtitle: Text(
-                  conta.descricao ?? '',
-                  style: TextStyle(color: TemaConfiguracao.corTextoSecundario),
-                ),
-                trailing: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      'R\$ ${conta.saldoInicial.toStringAsFixed(2).replaceAll('.', ',')}',
-                      style: TextStyle(
-                        color: ehNegativa ? TemaConfiguracao.corErro : TemaConfiguracao.corSucesso,
-                        fontWeight: FontWeight.bold,
+                    CircleAvatar(
+                      backgroundColor: ehNegativa
+                          ? TemaConfiguracao.corErro.withOpacity(0.15)
+                          : TemaConfiguracao.corSucesso.withOpacity(0.15),
+                      child: Icon(
+                        ehNegativa ? Icons.trending_down : Icons.trending_up,
+                        color: ehNegativa
+                            ? TemaConfiguracao.corErro
+                            : TemaConfiguracao.corSucesso,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Row(
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            conta.nome,
+                            style: const TextStyle(
+                                color: TemaConfiguracao.corTexto,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            conta.descricao ?? '',
+                            style: const TextStyle(
+                                color: TemaConfiguracao.corTextoSecundario),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
                       mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Switch(
-                          value: conta.ativa,
-                          activeColor: TemaConfiguracao.corPrimaria,
-                          onChanged: (v) {
-                            setState(() {
-                              _contas[index] = conta.copiarCom(ativa: v);
-                            });
-                          },
+                        Text(
+                          'R\$ ${conta.saldoInicial.toStringAsFixed(2).replaceAll('.', ',')}',
+                          style: TextStyle(
+                            color: ehNegativa
+                                ? TemaConfiguracao.corErro
+                                : TemaConfiguracao.corSucesso,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined),
-                          onPressed: () => _editarConta(conta),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          onPressed: () => _excluirConta(conta),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Transform.scale(
+                              scale: 0.9,
+                              child: Switch(
+                                value: conta.ativa,
+                                activeThumbColor:
+                                    TemaConfiguracao.corPrimaria,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                onChanged: (v) {
+                                  setState(() {
+                                    _contas[index] =
+                                        conta.copiarCom(ativa: v);
+                                  });
+                                },
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined),
+                              iconSize: 20,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () => _editarConta(conta),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline),
+                              iconSize: 20,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () => _excluirConta(conta),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -139,19 +177,30 @@ class _ContasTelaState extends State<ContasTela> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nomeController, decoration: const InputDecoration(labelText: 'Nome')),
-            TextField(controller: descricaoController, decoration: const InputDecoration(labelText: 'Descrição')),
-            TextField(controller: saldoController, decoration: const InputDecoration(labelText: 'Saldo Inicial')),
+            TextField(
+                controller: nomeController,
+                decoration: const InputDecoration(labelText: 'Nome')),
+            TextField(
+                controller: descricaoController,
+                decoration: const InputDecoration(labelText: 'Descrição')),
+            TextField(
+                controller: saldoController,
+                decoration: const InputDecoration(labelText: 'Saldo Inicial')),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Adicionar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar')),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Adicionar')),
         ],
       ),
     );
     if (ok == true) {
-      final saldo = double.tryParse(saldoController.text.replaceAll(',', '.')) ?? 0.0;
+      final saldo =
+          double.tryParse(saldoController.text.replaceAll(',', '.')) ?? 0.0;
       setState(() {
         _contas.add(
           Conta(
@@ -173,8 +222,10 @@ class _ContasTelaState extends State<ContasTela> {
 
   Future<void> _editarConta(Conta conta) async {
     final nomeController = TextEditingController(text: conta.nome);
-    final descricaoController = TextEditingController(text: conta.descricao ?? '');
-    final saldoController = TextEditingController(text: conta.saldoInicial.toStringAsFixed(2).replaceAll('.', ','));
+    final descricaoController =
+        TextEditingController(text: conta.descricao ?? '');
+    final saldoController = TextEditingController(
+        text: conta.saldoInicial.toStringAsFixed(2).replaceAll('.', ','));
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -182,19 +233,31 @@ class _ContasTelaState extends State<ContasTela> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nomeController, decoration: const InputDecoration(labelText: 'Nome')),
-            TextField(controller: descricaoController, decoration: const InputDecoration(labelText: 'Descrição')),
-            TextField(controller: saldoController, decoration: const InputDecoration(labelText: 'Saldo Inicial')),
+            TextField(
+                controller: nomeController,
+                decoration: const InputDecoration(labelText: 'Nome')),
+            TextField(
+                controller: descricaoController,
+                decoration: const InputDecoration(labelText: 'Descrição')),
+            TextField(
+                controller: saldoController,
+                decoration: const InputDecoration(labelText: 'Saldo Inicial')),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Salvar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar')),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Salvar')),
         ],
       ),
     );
     if (ok == true) {
-      final saldo = double.tryParse(saldoController.text.replaceAll(',', '.')) ?? conta.saldoInicial;
+      final saldo =
+          double.tryParse(saldoController.text.replaceAll(',', '.')) ??
+              conta.saldoInicial;
       setState(() {
         final idx = _contas.indexWhere((c) => c.id == conta.id);
         if (idx >= 0) {
@@ -215,9 +278,12 @@ class _ContasTelaState extends State<ContasTela> {
         title: const Text('Excluir Conta'),
         content: Text('Deseja excluir "${conta.nome}"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: TemaConfiguracao.corErro),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: TemaConfiguracao.corErro),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Excluir'),
           ),
@@ -229,7 +295,9 @@ class _ContasTelaState extends State<ContasTela> {
         _contas.removeWhere((c) => c.id == conta.id);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Conta excluída'), backgroundColor: TemaConfiguracao.corSucesso),
+        const SnackBar(
+            content: Text('Conta excluída'),
+            backgroundColor: TemaConfiguracao.corSucesso),
       );
     }
   }

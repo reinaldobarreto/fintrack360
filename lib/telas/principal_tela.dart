@@ -33,7 +33,9 @@ class _PrincipalTelaState extends State<PrincipalTela> {
     // Exibe uma mensagem de sucesso (se fornecida) após a construção do layout
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (!_sucessoMostrado && widget.sucessoMensagem != null && widget.sucessoMensagem!.isNotEmpty) {
+      if (!_sucessoMostrado &&
+          widget.sucessoMensagem != null &&
+          widget.sucessoMensagem!.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -136,8 +138,9 @@ class _PrincipalTelaState extends State<PrincipalTela> {
 
   /// Realiza logout do usuário
   Future<void> _fazerLogout() async {
-    final authProvedor = Provider.of<AutenticacaoProvedor>(context, listen: false);
-    
+    final authProvedor =
+        Provider.of<AutenticacaoProvedor>(context, listen: false);
+
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -158,9 +161,9 @@ class _PrincipalTelaState extends State<PrincipalTela> {
 
     if (confirmar == true) {
       await authProvedor.fazerLogout();
-      
+
       if (!mounted) return;
-      
+
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginTela()),
       );
@@ -173,10 +176,10 @@ class _PrincipalTelaState extends State<PrincipalTela> {
       builder: (context, authProvedor, child) {
         final usuario = authProvedor.usuarioAtual;
         final ehAdmin = usuario?.ehAdmin ?? false;
-        
+
         final telas = ehAdmin ? _telasAdmin : _telasUsuario;
         final itens = ehAdmin ? _itensAdmin : _itensUsuario;
-        
+
         // Ajustar índice se necessário (para evitar overflow quando admin vira usuário)
         if (_indiceAtual >= telas.length) {
           _indiceAtual = 0;
@@ -209,8 +212,8 @@ class _PrincipalTelaState extends State<PrincipalTela> {
                     children: [
                       const Text('FinTrack360'),
                       Text(
-                        'Olá, ' + (usuario?.nome ?? 'Usuário'),
-                        style: TextStyle(
+                        'Olá, ${usuario?.nome ?? 'Usuário'}',
+                        style: const TextStyle(
                           color: TemaConfiguracao.corTextoSecundario,
                           fontSize: 12,
                         ),
@@ -226,7 +229,7 @@ class _PrincipalTelaState extends State<PrincipalTela> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: ehAdmin 
+                  color: ehAdmin
                       ? TemaConfiguracao.corPrimaria.withOpacity(0.2)
                       : TemaConfiguracao.corSecundaria.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
@@ -234,7 +237,7 @@ class _PrincipalTelaState extends State<PrincipalTela> {
                 child: Text(
                   ehAdmin ? 'ADMIN' : 'USER',
                   style: TextStyle(
-                    color: ehAdmin 
+                    color: ehAdmin
                         ? TemaConfiguracao.corPrimaria
                         : TemaConfiguracao.corSecundaria,
                     fontSize: 10,
@@ -243,7 +246,7 @@ class _PrincipalTelaState extends State<PrincipalTela> {
                 ),
               ),
               const SizedBox(width: 8),
-              
+
               // Menu de opções
               PopupMenuButton<String>(
                 icon: CircleAvatar(

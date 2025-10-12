@@ -22,14 +22,61 @@ class AutenticacaoServico {
       );
 
       if (resultado.user != null) {
-        // Atualiza a data do último acesso
+        print('[Auth] Login bem-sucedido uid=' + resultado.user!.uid);
+        // Garante que o documento do usuário exista e obtenha seus dados
+        final usuario = await obterDadosUsuario(resultado.user!.uid);
+        if (usuario != null) {
+          print('[Firestore] Leitura usuario uid=' + usuario.id + ' sucesso');
+        }
+        // Atualiza a data do último acesso após garantir a existência do documento.
+        // Qualquer falha aqui não deve bloquear o login.
         await _atualizarUltimoAcesso(resultado.user!.uid);
-        
-        // Busca os dados completos do usuário
-        return await obterDadosUsuario(resultado.user!.uid);
+        print('[Firestore] Write dataUltimoAcesso uid=' + resultado.user!.uid + ' sucesso');
+        return usuario;
       }
       return null;
     } on FirebaseAuthException catch (e) {
+      // Se o usuário não existir e for o admin padrão, cria automaticamente
+      if (e.code == 'user-not-found' && email.trim() == 'admin@fintrack.com') {
+        try {
+          // Cria o usuário administrador com a senha informada
+          final UserCredential novo = await _auth.createUserWithEmailAndPassword(
+            email: email.trim(),
+            password: senha,
+          );
+
+          if (novo.user != null) {
+            // Cria documento do admin no Firestore
+            final usuarioAdmin = Usuario(
+              id: novo.user!.uid,
+              nome: 'Administrador',
+              email: email.trim(),
+              tipo: TipoUsuario.admin,
+              ativo: true,
+              dataCriacao: DateTime.now(),
+              dataUltimoAcesso: DateTime.now(),
+            );
+
+            await _firestore
+                .collection('usuarios')
+                .doc(novo.user!.uid)
+                .set(usuarioAdmin.paraFirestore());
+            print('[Firestore] Write usuario admin uid=' + novo.user!.uid + ' sucesso');
+
+            // Atualiza nome de exibição
+            await novo.user!.updateDisplayName('Administrador');
+
+            // Retorna dados completos
+            return await obterDadosUsuario(novo.user!.uid);
+          }
+          return null;
+        } on FirebaseAuthException catch (ce) {
+          // Propaga erro tratado do fluxo de criação
+          throw _tratarErroAutenticacao(ce);
+        } catch (ce) {
+          throw Exception('Erro ao criar usuário admin: $ce');
+        }
+      }
       throw _tratarErroAutenticacao(e);
     }
   }
@@ -102,8 +149,40 @@ class AutenticacaoServico {
           doc.id,
         );
       }
+      final user = _auth.currentUser;
+      if (user != null) {
+        final novoUsuario = Usuario(
+          id: uid,
+          nome: user.displayName ?? 'Usuário',
+          email: user.email ?? '',
+          tipo: (user.email != null && user.email!.toLowerCase() == 'admin@fintrack.com')
+              ? TipoUsuario.admin
+              : TipoUsuario.usuario,
+          ativo: true,
+          dataCriacao: DateTime.now(),
+          dataUltimoAcesso: DateTime.now(),
+        );
+        try {
+          await _firestore
+              .collection('usuarios')
+              .doc(uid)
+              .set(novoUsuario.paraFirestore());
+          print('[Firestore] Write usuario uid=' + uid + ' (criado automaticamente) sucesso');
+        } on FirebaseException catch (fe) {
+          print('[Firestore] Erro ao criar usuario uid=' + uid + ' code=' + fe.code + ' message=' + (fe.message ?? ''));
+          rethrow;
+        } catch (e) {
+          print('[Firestore] Erro inesperado ao criar usuario uid=' + uid + ': ' + e.toString());
+          rethrow;
+        }
+        return novoUsuario;
+      }
       return null;
+    } on FirebaseException catch (e) {
+      print('[Firestore] Erro ao obter usuario uid=' + uid + ' code=' + e.code + ' message=' + (e.message ?? ''));
+      rethrow;
     } catch (e) {
+      print('[Firestore] Erro inesperado ao obter usuario uid=' + uid + ': ' + e.toString());
       throw Exception('Erro ao buscar dados do usuário: $e');
     }
   }
@@ -114,9 +193,10 @@ class AutenticacaoServico {
       await _firestore
           .collection('usuarios')
           .doc(uid)
-          .update({
+          .set({
         'dataUltimoAcesso': Timestamp.fromDate(DateTime.now()),
-      });
+      }, SetOptions(merge: true));
+      print('[Firestore] Write merge dataUltimoAcesso uid=' + uid + ' sucesso');
     } catch (e) {
       // Ignora erros de atualização do último acesso
       print('Erro ao atualizar último acesso: $e');
@@ -127,7 +207,7 @@ class AutenticacaoServico {
   Future<void> criarUsuarioAdminPadrao() async {
     try {
       const emailAdmin = 'admin@fintrack.com';
-      const senhaAdmin = 'admin123';
+      const senhaAdmin = 'admin1234';
       const nomeAdmin = 'Administrador';
 
       // Verifica se o usuário admin já existe

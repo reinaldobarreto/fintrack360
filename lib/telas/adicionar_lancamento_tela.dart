@@ -17,7 +17,8 @@ class AdicionarLancamentoTela extends StatefulWidget {
   });
 
   @override
-  State<AdicionarLancamentoTela> createState() => _AdicionarLancamentoTelaState();
+  State<AdicionarLancamentoTela> createState() =>
+      _AdicionarLancamentoTelaState();
 }
 
 class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
@@ -25,12 +26,12 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
   final _descricaoController = TextEditingController();
   final _valorController = TextEditingController();
   final _observacoesController = TextEditingController();
-  
+
   TipoLancamento _tipoSelecionado = TipoLancamento.despesa;
   String? _categoriaSelecionada;
   String? _contaSelecionada;
   DateTime _dataSelecionada = DateTime.now();
-  
+
   bool get _ehEdicao => widget.lancamento != null;
 
   // Dados mockados para demonstração
@@ -113,7 +114,8 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
     if (_ehEdicao) {
       final lancamento = widget.lancamento!;
       _descricaoController.text = lancamento.descricao;
-      _valorController.text = lancamento.valor.toStringAsFixed(2).replaceAll('.', ',');
+      _valorController.text =
+          lancamento.valor.toStringAsFixed(2).replaceAll('.', ',');
       _observacoesController.text = lancamento.observacoes ?? '';
       _tipoSelecionado = lancamento.tipo;
       _categoriaSelecionada = lancamento.idCategoria;
@@ -131,7 +133,7 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
         actions: [
           TextButton(
             onPressed: _salvarLancamento,
-            child: Text(
+            child: const Text(
               'Salvar',
               style: TextStyle(
                 color: TemaConfiguracao.corPrimaria,
@@ -150,9 +152,9 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
             children: [
               // Seletor de tipo (Receita/Despesa)
               _buildSeletorTipo(),
-              
+
               const SizedBox(height: 24),
-              
+
               // Campo de descrição
               TextFormField(
                 controller: _descricaoController,
@@ -161,15 +163,18 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
                   labelText: 'Descrição',
                   prefixIcon: Icon(Icons.description_outlined),
                 ),
-                validator: RequiredValidator(errorText: 'Descrição é obrigatória'),
+                validator:
+                    RequiredValidator(errorText: 'Descrição é obrigatória')
+                        .call,
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Campo de valor
               TextFormField(
                 controller: _valorController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
                 ],
@@ -180,16 +185,16 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
                 ),
                 validator: MultiValidator([
                   RequiredValidator(errorText: 'Valor é obrigatório'),
-                  PatternValidator(r'^[0-9]+([,][0-9]{1,2})?$', 
+                  PatternValidator(r'^[0-9]+([,][0-9]{1,2})?$',
                       errorText: 'Digite um valor válido (ex: 100,50)'),
-                ]),
+                ]).call,
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Seletor de categoria
               DropdownButtonFormField<String>(
-                value: _categoriaSelecionada,
+                initialValue: _categoriaSelecionada,
                 decoration: const InputDecoration(
                   labelText: 'Categoria',
                   prefixIcon: Icon(Icons.category_outlined),
@@ -205,14 +210,16 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
                     _categoriaSelecionada = valor;
                   });
                 },
-                validator: RequiredValidator(errorText: 'Categoria é obrigatória'),
+                validator:
+                    RequiredValidator(errorText: 'Categoria é obrigatória')
+                        .call,
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Seletor de conta
               DropdownButtonFormField<String>(
-                value: _contaSelecionada,
+                initialValue: _contaSelecionada,
                 decoration: const InputDecoration(
                   labelText: 'Conta',
                   prefixIcon: Icon(Icons.account_balance_outlined),
@@ -228,11 +235,12 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
                     _contaSelecionada = valor;
                   });
                 },
-                validator: RequiredValidator(errorText: 'Conta é obrigatória'),
+                validator:
+                    RequiredValidator(errorText: 'Conta é obrigatória').call,
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Seletor de data
               InkWell(
                 onTap: _selecionarData,
@@ -245,16 +253,16 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
                     '${_dataSelecionada.day.toString().padLeft(2, '0')}/'
                     '${_dataSelecionada.month.toString().padLeft(2, '0')}/'
                     '${_dataSelecionada.year}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: TemaConfiguracao.corTexto,
                       fontSize: 16,
                     ),
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Campo de observações
               TextFormField(
                 controller: _observacoesController,
@@ -266,9 +274,9 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
                   alignLabelWithHint: true,
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               // Botão de salvar
               SizedBox(
                 height: 50,
@@ -430,8 +438,8 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
 
     if (valor == null || valor <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Digite um valor válido'),
+        const SnackBar(
+          content: Text('Digite um valor válido'),
           backgroundColor: TemaConfiguracao.corErro,
         ),
       );
@@ -443,8 +451,8 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(_ehEdicao 
-            ? 'Lançamento atualizado com sucesso' 
+        content: Text(_ehEdicao
+            ? 'Lançamento atualizado com sucesso'
             : 'Lançamento adicionado com sucesso'),
         backgroundColor: TemaConfiguracao.corSucesso,
       ),

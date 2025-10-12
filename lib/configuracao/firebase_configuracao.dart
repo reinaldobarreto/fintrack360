@@ -6,14 +6,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// Configuração do Firebase para diferentes plataformas
 class FirebaseConfiguracao {
   // Flags de ambiente para uso do Emulador (definidas via --dart-define)
-  static const bool usarEmulador =
-      bool.fromEnvironment('USE_FIREBASE_EMULATOR', defaultValue: false);
+  // Emulador do Firebase desativado por padrão.
+  // Ative somente passando --dart-define=USE_FIREBASE_EMULATOR=true.
+  static const bool usarEmulador = bool.fromEnvironment(
+    'USE_FIREBASE_EMULATOR',
+    defaultValue: false,
+  );
   static const String hostEmulador =
       String.fromEnvironment('FIREBASE_EMULATOR_HOST', defaultValue: 'localhost');
   static const int portaAuthEmulador =
       int.fromEnvironment('FIREBASE_AUTH_EMULATOR_PORT', defaultValue: 9099);
   static const int portaFirestoreEmulador =
       int.fromEnvironment('FIREBASE_FIRESTORE_EMULATOR_PORT', defaultValue: 8080);
+
+  // No Android emulador, "localhost" aponta para o próprio AVD.
+  // Para alcançar o host da máquina, usamos 10.0.2.2.
+  static String get hostEmuladorEfetivo {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      return '10.0.2.2';
+    }
+    return hostEmulador;
+  }
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCdpWyJYBwcD9i2Tonk-2IMxXNDJa-fRuo',
     appId: '1:171178762369:android:8bf627c9336e3e72086d80',
@@ -65,22 +78,44 @@ class FirebaseConfiguracao {
     // divergência de chaves/APIs. No Web, usar as opções explícitas.
     if (kIsWeb) {
       await Firebase.initializeApp(options: web);
+      // Logs de diagnóstico: credenciais ativas (Web)
+      try {
+        final opts = Firebase.app().options;
+        print('[Firebase Web] projectId=${opts.projectId} appId=${opts.appId} authDomain=${opts.authDomain} apiKey=${opts.apiKey}');
+      } catch (_) {}
+      // Ajustes de compatibilidade Web: desabilita persistência para evitar
+      // problemas de rede (long polling/proxies) que podem causar ERR_ABORTED
+      // em canais de escuta do Firestore.
+      try {
+        FirebaseFirestore.instance.settings = const Settings(
+          persistenceEnabled: false,
+        );
+      } catch (_) {
+        // Ignorar caso não suportado ou já configurado
+      }
     } else {
       await Firebase.initializeApp();
+      // Logs de diagnóstico: credenciais ativas (Mobile/Desktop)
+      try {
+        final opts = Firebase.app().options;
+        print('[Firebase ${defaultTargetPlatform}] projectId=${opts.projectId} appId=${opts.appId}');
+      } catch (_) {}
     }
 
     // Conectar aos Emuladores quando habilitado
     if (usarEmulador) {
       try {
-        FirebaseAuth.instance.useAuthEmulator(hostEmulador, portaAuthEmulador);
+        FirebaseAuth.instance.useAuthEmulator(hostEmuladorEfetivo, portaAuthEmulador);
+        print('[Auth Emulator] host=$hostEmuladorEfetivo port=$portaAuthEmulador');
       } catch (_) {
         // Ignorar se já estiver conectado ou plataforma não suportar
       }
       try {
         FirebaseFirestore.instance.useFirestoreEmulator(
-          hostEmulador,
+          hostEmuladorEfetivo,
           portaFirestoreEmulador,
         );
+        print('[Firestore Emulator] host=$hostEmuladorEfetivo port=$portaFirestoreEmulador');
       } catch (_) {
         // Ignorar se já estiver conectado ou plataforma não suportar
       }

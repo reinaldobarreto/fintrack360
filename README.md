@@ -96,3 +96,19 @@ Para já mostrar o que existe hoje no repositório, você pode referenciar estas
 
 ## Autor
 - Reinaldo Barreto — Flutter/Dart
+## 📝 Observações
+- O login demo é somente local e não cria contas reais.
+- O login padrão (`admin@fintrack.com` / `admin1234`) segue disponível, mas você pode usar apenas o demo na Web.
+
+## 🚀 Publicar no GitHub Pages (gh-pages)
+1) Habilite Web no Flutter (uma vez):
+   - `flutter config --enable-web`
+2) Construa a versão Web com modo demo local ativado:
+   - `flutter build web --release --dart-define=USE_LOCAL_DEMO_AUTH=true`
+3) Ajuste o `base href` para seu repositório (GitHub Pages):
+   - Edite `web/index.html` e defina `<base href="/<nome-do-repo>/">`.
+   - Exemplo: se publicar em `seuusuario.github.io/fintrack360`, use `<base href="/fintrack360/">`.
+4) Publique o conteúdo de `build/web` na branch `gh-pages`:
+   - Crie a branch `gh-pages` e copie os arquivos de `build/web` para a raiz.
+   - Faça push da branch e, nas configurações do GitHub, ative Pages apontando para `gh-pages`/`root`.
+5) Alternativa (automática): use o workflow em `.github/workflows/deploy-gh-pages.yml` com ação manual (`workflow_dispatch`).

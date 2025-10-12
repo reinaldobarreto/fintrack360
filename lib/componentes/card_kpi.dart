@@ -51,7 +51,7 @@ class CardKPI extends StatelessWidget {
               Expanded(
                 child: Text(
                   titulo,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: TemaConfiguracao.corTextoSecundario,
                     fontWeight: FontWeight.w500,
@@ -60,31 +60,31 @@ class CardKPI extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Valor principal
           Text(
             'R\$ ${valor.toStringAsFixed(2).replaceAll('.', ',')}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: TemaConfiguracao.corTexto,
             ),
           ),
-          
+
           // Tendência (se fornecida)
           if (tendencia != null) ...[
             const SizedBox(height: 4),
             Row(
               children: [
                 Icon(
-                  tendencia!.startsWith('+') 
-                      ? Icons.trending_up 
+                  tendencia!.startsWith('+')
+                      ? Icons.trending_up
                       : Icons.trending_down,
                   size: 16,
-                  color: tendencia!.startsWith('+') 
-                      ? TemaConfiguracao.corSucesso 
+                  color: tendencia!.startsWith('+')
+                      ? TemaConfiguracao.corSucesso
                       : TemaConfiguracao.corErro,
                 ),
                 const SizedBox(width: 4),
@@ -92,8 +92,8 @@ class CardKPI extends StatelessWidget {
                   tendencia!,
                   style: TextStyle(
                     fontSize: 12,
-                    color: tendencia!.startsWith('+') 
-                        ? TemaConfiguracao.corSucesso 
+                    color: tendencia!.startsWith('+')
+                        ? TemaConfiguracao.corSucesso
                         : TemaConfiguracao.corErro,
                     fontWeight: FontWeight.w500,
                   ),

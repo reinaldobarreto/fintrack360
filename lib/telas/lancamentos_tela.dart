@@ -15,9 +15,14 @@ class LancamentosTela extends StatefulWidget {
 class _LancamentosTelaState extends State<LancamentosTela> {
   String _filtroSelecionado = 'Todos';
   String _periodoSelecionado = 'Este mês';
-  
+
   final List<String> _filtros = ['Todos', 'Receitas', 'Despesas'];
-  final List<String> _periodos = ['Esta semana', 'Este mês', 'Últimos 3 meses', 'Este ano'];
+  final List<String> _periodos = [
+    'Esta semana',
+    'Este mês',
+    'Últimos 3 meses',
+    'Este ano'
+  ];
 
   // Dados mockados para demonstração
   final List<Lancamento> _lancamentos = [
@@ -67,7 +72,7 @@ class _LancamentosTelaState extends State<LancamentosTela> {
         children: [
           // Filtros
           _buildFiltros(),
-          
+
           // Lista de lançamentos
           Expanded(
             child: lancamentosFiltrados.isEmpty
@@ -121,7 +126,7 @@ class _LancamentosTelaState extends State<LancamentosTela> {
           // Filtro por tipo
           Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: Text(
                   'Filtrar por:',
                   style: TextStyle(
@@ -132,7 +137,8 @@ class _LancamentosTelaState extends State<LancamentosTela> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: TemaConfiguracao.corFundo,
                   borderRadius: BorderRadius.circular(8),
@@ -144,7 +150,7 @@ class _LancamentosTelaState extends State<LancamentosTela> {
                   child: DropdownButton<String>(
                     value: _filtroSelecionado,
                     isDense: true,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: TemaConfiguracao.corTexto,
                       fontSize: 14,
                     ),
@@ -165,13 +171,13 @@ class _LancamentosTelaState extends State<LancamentosTela> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Filtro por período
           Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: Text(
                   'Período:',
                   style: TextStyle(
@@ -182,7 +188,8 @@ class _LancamentosTelaState extends State<LancamentosTela> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: TemaConfiguracao.corFundo,
                   borderRadius: BorderRadius.circular(8),
@@ -194,7 +201,7 @@ class _LancamentosTelaState extends State<LancamentosTela> {
                   child: DropdownButton<String>(
                     value: _periodoSelecionado,
                     isDense: true,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: TemaConfiguracao.corTexto,
                       fontSize: 14,
                     ),
@@ -232,7 +239,7 @@ class _LancamentosTelaState extends State<LancamentosTela> {
             color: TemaConfiguracao.corTextoSecundario.withOpacity(0.5),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Nenhum lançamento encontrado',
             style: TextStyle(
               fontSize: 18,
@@ -241,7 +248,7 @@ class _LancamentosTelaState extends State<LancamentosTela> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Toque no botão + para adicionar seu primeiro lançamento',
             style: TextStyle(
               fontSize: 14,
@@ -276,11 +283,13 @@ class _LancamentosTelaState extends State<LancamentosTela> {
 
   /// Adiciona um novo lançamento
   void _adicionarLancamento() {
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (context) => const AdicionarLancamentoTela(),
       ),
-    ).then((resultado) {
+    )
+        .then((resultado) {
       if (resultado == true) {
         _atualizarLancamentos();
       }
@@ -289,11 +298,13 @@ class _LancamentosTelaState extends State<LancamentosTela> {
 
   /// Edita um lançamento existente
   void _editarLancamento(Lancamento lancamento) {
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (context) => AdicionarLancamentoTela(lancamento: lancamento),
       ),
-    ).then((resultado) {
+    )
+        .then((resultado) {
       if (resultado == true) {
         _atualizarLancamentos();
       }
@@ -306,7 +317,8 @@ class _LancamentosTelaState extends State<LancamentosTela> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirmar Exclusão'),
-        content: Text('Deseja realmente excluir o lançamento "${lancamento.descricao}"?'),
+        content: Text(
+            'Deseja realmente excluir o lançamento "${lancamento.descricao}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -329,8 +341,8 @@ class _LancamentosTelaState extends State<LancamentosTela> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Lançamento excluído com sucesso'),
+        const SnackBar(
+          content: Text('Lançamento excluído com sucesso'),
           backgroundColor: TemaConfiguracao.corSucesso,
         ),
       );
@@ -341,9 +353,9 @@ class _LancamentosTelaState extends State<LancamentosTela> {
   Future<void> _atualizarLancamentos() async {
     // Simula carregamento de dados
     await Future.delayed(const Duration(seconds: 1));
-    
+
     // Aqui seria implementada a lógica para buscar dados reais
-    
+
     if (mounted) {
       setState(() {
         // Dados atualizados

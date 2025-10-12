@@ -41,7 +41,8 @@ class _GraficoPizzaState extends State<GraficoPizza> {
                       _secaoTocada = -1;
                       return;
                     }
-                    _secaoTocada = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                    _secaoTocada =
+                        pieTouchResponse.touchedSection!.touchedSectionIndex;
                   });
                 },
               ),
@@ -52,9 +53,9 @@ class _GraficoPizzaState extends State<GraficoPizza> {
             ),
           ),
         ),
-        
+
         const SizedBox(width: 20),
-        
+
         // Legenda
         Expanded(
           flex: 2,
@@ -65,7 +66,7 @@ class _GraficoPizzaState extends State<GraficoPizza> {
               final index = entry.key;
               final categoria = entry.value;
               final ehTocada = index == _secaoTocada;
-              
+
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Row(
@@ -87,16 +88,18 @@ class _GraficoPizzaState extends State<GraficoPizza> {
                             categoria.nome,
                             style: TextStyle(
                               fontSize: ehTocada ? 12 : 11,
-                              fontWeight: ehTocada ? FontWeight.bold : FontWeight.normal,
-                              color: ehTocada 
-                                  ? TemaConfiguracao.corTexto 
+                              fontWeight: ehTocada
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: ehTocada
+                                  ? TemaConfiguracao.corTexto
                                   : TemaConfiguracao.corTextoSecundario,
                             ),
                           ),
                           if (ehTocada)
                             Text(
                               'R\$ ${categoria.valor.toStringAsFixed(2).replaceAll('.', ',')}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 10,
                                 color: TemaConfiguracao.corTextoSecundario,
                               ),
@@ -117,7 +120,7 @@ class _GraficoPizzaState extends State<GraficoPizza> {
   /// Cria as seções do gráfico de pizza
   List<PieChartSectionData> _criarSecoes() {
     final total = _dadosCategorias.fold<double>(
-      0, 
+      0,
       (sum, categoria) => sum + categoria.valor,
     );
 
@@ -126,7 +129,7 @@ class _GraficoPizzaState extends State<GraficoPizza> {
       final categoria = entry.value;
       final ehTocada = index == _secaoTocada;
       final percentual = (categoria.valor / total * 100);
-      
+
       return PieChartSectionData(
         color: categoria.cor,
         value: categoria.valor,

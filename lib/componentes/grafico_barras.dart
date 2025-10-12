@@ -26,7 +26,7 @@ class GraficoBarras extends StatelessWidget {
               final tipo = group.x == 0 ? 'Receitas' : 'Despesas';
               return BarTooltipItem(
                 '$tipo\nR\$ ${valor.toStringAsFixed(2).replaceAll('.', ',')}',
-                TextStyle(
+                const TextStyle(
                   color: TemaConfiguracao.corTexto,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
@@ -96,7 +96,7 @@ class GraficoBarras extends StatelessWidget {
       fontWeight: FontWeight.bold,
       fontSize: 12,
     );
-    
+
     Widget text;
     switch (value.toInt()) {
       case 0:
@@ -115,7 +115,7 @@ class GraficoBarras extends StatelessWidget {
         text = const Text('', style: style);
         break;
     }
-    
+
     return SideTitleWidget(
       meta: meta,
       space: 16,
@@ -125,19 +125,19 @@ class GraficoBarras extends StatelessWidget {
 
   /// Cria os títulos da esquerda (eixo Y)
   Widget _criarTitulosEsquerda(double value, TitleMeta meta) {
-    final style = TextStyle(
+    const style = TextStyle(
       fontWeight: FontWeight.w400,
       fontSize: 10,
       color: TemaConfiguracao.corTextoSecundario,
     );
-    
+
     String text;
     if (value >= 1000) {
       text = '${(value / 1000).toStringAsFixed(1)}k';
     } else {
       text = value.toInt().toString();
     }
-    
+
     return SideTitleWidget(
       meta: meta,
       space: 8,
@@ -171,7 +171,7 @@ class GraficoBarras extends StatelessWidget {
           ),
         ],
       ),
-      
+
       // Barra de despesas
       BarChartGroupData(
         x: 1,

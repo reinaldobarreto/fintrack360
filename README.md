@@ -33,12 +33,48 @@ Visual do app em uma grade compacta para leitura rápida:
   <img src="assets/images/tela_cadastro_usuario_mobile.png" width="240" alt="Cadastro de Usuário" />
 </p>
 
-## Como usar (local)
-- Requisitos: Flutter `stable` instalado.
+## Como clonar e importar (VS Code e Android Studio)
+
+### Requisitos
+- Flutter `stable` (3.x) e Dart SDK (incluso no Flutter)
+- Git instalado
+- VS Code com extensões: `Flutter` e `Dart`
+- Android Studio com Android SDK e AVD (emulador) configurados
+- Navegador Chrome (para executar em Web)
+- Verifique o ambiente: `flutter doctor` e resolva eventuais pendências
+
+### Clonar o projeto
 ```bash
+git clone https://github.com/reinaldobarreto/fintrack360.git
+cd fintrack360
 flutter pub get
-flutter run -d chrome
 ```
+
+### Importar e rodar no VS Code
+- Abra o projeto: `code .`
+- Habilite Web (uma vez): `flutter config --enable-web`
+- Selecione o dispositivo: `Ctrl+Shift+P` → `Flutter: Select Device` → `Chrome` (ou emulador Android)
+- Rode o app: `F5` ou `flutter run -d chrome`
+
+### Importar e rodar no Android Studio
+- Abra: `File → Open...` e selecione a pasta `fintrack360`
+- Instale plugins `Flutter` e `Dart` se solicitado
+- Aceite licenças do Android: `flutter doctor --android-licenses`
+- Crie/abra um emulador: `AVD Manager` → crie um dispositivo (por exemplo, Pixel 5 API 34)
+- Baixe dependências: `flutter pub get`
+- Rode: selecione o emulador no topo e clique em `Run`
+
+### Execução rápida por linha de comando
+- Web (Chrome): `flutter run -d chrome`
+- Android (emulador ou dispositivo físico): `flutter run`
+
+### Credenciais/Demo
+- Para avaliar rapidamente sem backend, use a opção `Pular login (demo local)`
+- Credenciais padrão também estão disponíveis: `admin@fintrack.com` / `admin1234`
+
+### Problemas comuns
+- Se o Gradle/SDK falhar, rode: `flutter clean && flutter pub get`
+- Se não encontrar Android SDK, abra o Android Studio para instalar o SDK/Platform Tools e execute `flutter doctor` novamente
 
 ## Imagens do Funcionamento
 Para explicar visualmente o funcionamento no GitHub, inclua capturas de tela na pasta `assets/images/` usando nomes padronizados:

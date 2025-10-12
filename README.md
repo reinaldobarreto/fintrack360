@@ -1,4 +1,5 @@
 # FinTrack360 — Flutter/Dart demo (GitHub Pages)
+<img align="right" alt="app demo" width="220" src="https://media.giphy.com/media/2shU4qZrZpZqQ/giphy.gif" />
 
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white)](https://dart.dev/)
@@ -11,6 +12,13 @@
 
 Aplicativo Flutter para controle financeiro pessoal/familiar. Foco em mobile-first e teste rápido via web.
 
+<p>
+  <img src="https://img.shields.io/badge/Android%20Studio-3DDC84?style=for-the-badge&logo=android-studio&logoColor=white" alt="Android Studio" />
+  <img src="https://img.shields.io/badge/VS%20Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" alt="VS Code" />
+  <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart" />
+</p>
+
 ## Overview
 - Stack principal: **Flutter/Dart** (mobile-first + build web para demo)
 - Deploy: **GitHub Pages** automatizado via **GitHub Actions**
@@ -19,6 +27,9 @@ Aplicativo Flutter para controle financeiro pessoal/familiar. Foco em mobile-fir
 
 ## Demo
 - `https://reinaldobarreto.github.io/fintrack360/` (será publicado automaticamente após o primeiro push para `main`).
+
+### Tecnologias e Ferramentas
+[![Skills](https://skillicons.dev/icons?i=flutter,dart,firebase,js,ts,nodejs,react,sqlite,postgres,git,github,vscode,androidstudio,linux,windows&perline=9)](https://skillicons.dev)
 
 ### Galeria rápida
 Visual do app em uma grade compacta para leitura rápida:
@@ -75,6 +86,10 @@ flutter pub get
 ### Problemas comuns
 - Se o Gradle/SDK falhar, rode: `flutter clean && flutter pub get`
 - Se não encontrar Android SDK, abra o Android Studio para instalar o SDK/Platform Tools e execute `flutter doctor` novamente
+
+### Extras visuais
+- Emojis e badges ajudam na leitura: ✅📱💻
+- Use imagens da pasta `assets/images/` para destacar telas específicas.
 
 ## Imagens do Funcionamento
 Para explicar visualmente o funcionamento no GitHub, inclua capturas de tela na pasta `assets/images/` usando nomes padronizados:

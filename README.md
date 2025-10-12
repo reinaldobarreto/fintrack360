@@ -130,15 +130,13 @@ Para já mostrar o que existe hoje no repositório, você pode referenciar estas
 - Para testes públicos (GitHub Pages), o login demo é local e não cria contas reais.
 - Login padrão disponível: `admin@fintrack.com` / `admin1234`.
 
-### Tecnologias (perfil)
+### Tecnologias (projeto — Flutter/Dart)
 <p>
-  <a href="https://developer.mozilla.org/docs/Web/JavaScript" target="_blank"><img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=000" alt="JavaScript" /></a>
-  <a href="https://nodejs.org/" target="_blank"><img src="https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=fff" alt="Node.js" /></a>
-  <a href="https://angular.io/" target="_blank"><img src="https://img.shields.io/badge/Angular-DD0031?style=flat&logo=angular&logoColor=fff" alt="Angular" /></a>
-  <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=fff" alt="TypeScript" /></a>
-  <a href="https://react.dev/" target="_blank"><img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=000" alt="React" /></a>
-  <a href="https://developer.mozilla.org/docs/Web" target="_blank"><img src="https://img.shields.io/badge/Web-4285F4?style=flat&logo=google-chrome&logoColor=fff" alt="Web" /></a>
-  <a href="https://reactnative.dev/" target="_blank"><img src="https://img.shields.io/badge/React%20Native-61DAFB?style=flat&logo=react&logoColor=000" alt="React Native" /></a>
+  <img src="https://img.shields.io/badge/Flutter-02569B?style=flat&logo=flutter&logoColor=white" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Dart-0175C2?style=flat&logo=dart&logoColor=white" alt="Dart" />
+  <img src="https://img.shields.io/badge/Provider-7F3FBF?style=flat" alt="Provider (estado)" />
+  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=firebase&logoColor=black" alt="Firebase (Auth/Firestore)" />
+  <img src="https://img.shields.io/badge/Shared%20Preferences-00599C?style=flat" alt="Shared Preferences" />
 </p>
 
 ## 🧪 Como o recrutador pode avaliar

@@ -139,6 +139,18 @@ Para já mostrar o que existe hoje no repositório, você pode referenciar estas
   <img src="https://img.shields.io/badge/Shared%20Preferences-00599C?style=flat" alt="Shared Preferences" />
 </p>
 
+### Ambiente e IDEs (Flutter/Dart)
+<p>
+  <img src="https://img.shields.io/badge/Android%20Studio-3DDC84?style=flat&logo=android-studio&logoColor=white" alt="Android Studio" />
+  <img src="https://img.shields.io/badge/VS%20Code-007ACC?style=flat&logo=visual-studio-code&logoColor=white" alt="VS Code" />
+</p>
+
+### Plataformas Mobile
+<p>
+  <img src="https://img.shields.io/badge/Android-3DDC84?style=flat&logo=android&logoColor=white" alt="Android" />
+  <img src="https://img.shields.io/badge/iOS-000000?style=flat&logo=apple&logoColor=white" alt="iOS" />
+</p>
+
 ## 🧪 Como o recrutador pode avaliar
 - Abra a Demo Web no link acima.
 - Clique em “Pular login (demo local)” para acessar o dashboard.

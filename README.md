@@ -112,3 +112,21 @@ Para já mostrar o que existe hoje no repositório, você pode referenciar estas
    - Crie a branch `gh-pages` e copie os arquivos de `build/web` para a raiz.
    - Faça push da branch e, nas configurações do GitHub, ative Pages apontando para `gh-pages`/`root`.
 5) Alternativa (automática): use o workflow em `.github/workflows/deploy-gh-pages.yml` com ação manual (`workflow_dispatch`).
+## 🔗 Demo Web (GitHub Pages)
+- Acesse: https://reinaldobarreto.github.io/fintrack360/
+- Na primeira visita, use “Pular login (demo local)” para avaliar rapidamente sem Firebase.
+
+## 📌 Sobre o Projeto
+- App Flutter focado em Mobile (Android/iOS) com suporte a Web.
+- Para testes públicos (GitHub Pages), o login demo é local e não cria contas reais.
+- Login padrão disponível: `admin@fintrack.com` / `admin1234`.
+
+## 🧪 Como o recrutador pode avaliar
+- Abra a Demo Web no link acima.
+- Clique em “Pular login (demo local)” para acessar o dashboard.
+- Navegue pelos lançamentos, contas e gráficos; o estado é local ao navegador.
+
+## 📱 Build Mobile
+- Android APK: `flutter build apk --release`
+- Android AppBundle (Play Store): `flutter build appbundle --release`
+- iOS (requer macOS e Xcode): `flutter build ios --release` e Archive pelo Xcode.

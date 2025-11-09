@@ -1,0 +1,79 @@
+name: Build Android APK (FinTrack360)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag para a Release (ex.: v1.0.0 ou v2025-11-09)"
+        required: false
+        default: "v${{ github.run_id }}"
+  push:
+    branches: [ main ]
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Doctor
+        run: flutter doctor -v
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Clean
+        run: flutter clean
+
+      - name: Build Android APK (debug) com modo local demo
+        run: |
+          flutter build apk --debug \
+            --dart-define=USE_LOCAL_DEMO_AUTH=true \
+            --dart-define=USE_FIREBASE_EMULATOR=false
+
+      - name: Renomear APK para nome estável
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-debug.apk dist/fintrack360-app-debug.apk
+          ls -la dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fintrack360-app-debug
+          path: dist/fintrack360-app-debug.apk
+
+  release-apk:
+    needs: build-apk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fintrack360-app-debug
+          path: dist
+
+      - name: Criar Release e anexar APK
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.tag_name || format('v{0}', github.run_number) }}
+          name: "FinTrack360 APK (debug)"
+          draft: false
+          prerelease: false
+          files: |
+            dist/fintrack360-app-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,8 @@
 # FinTrack360 — Flutter/Dart demo (GitHub Pages)
 <img align="right" alt="app demo" width="220" src="https://media.giphy.com/media/2shU4qZrZpZqQ/giphy.gif" />
 
+[![Baixar APK (debug)](https://img.shields.io/badge/Baixar%20APK-Debug-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/reinaldobarreto/fintrack360/releases/latest/download/fintrack360-app-debug.apk)
+
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white)](https://dart.dev/)
 

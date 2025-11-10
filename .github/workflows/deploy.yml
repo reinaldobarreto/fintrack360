@@ -53,17 +53,20 @@ jobs:
       - name: Flutter doctor (diagnóstico)
         run: flutter doctor -v
 
-      - name: Install dependencies
+      - name: Install dependencies (fintrack360)
         run: flutter pub get
+        working-directory: fintrack360
 
       - name: Clean (garantir ambiente limpo)
         run: flutter clean
+        working-directory: fintrack360
 
       - name: Build web (base-href dinâmico para Pages, verbose)
         run: |
           set -o pipefail
           echo "Base-href: /${{ github.event.repository.name }}/"
           flutter build web --release -v --no-tree-shake-icons --base-href=/${{ github.event.repository.name }}/ 2>&1 | tee build_web_release.log
+        working-directory: fintrack360
         
       - name: Pós-build (verificar saída de build)
         run: |
@@ -71,6 +74,7 @@ jobs:
           ls -la build || true
           echo "== Listando build/web/ =="
           ls -la build/web || true
+        working-directory: fintrack360
 
       - name: Add .nojekyll e validar base-href
         run: |
@@ -78,12 +82,13 @@ jobs:
           touch build/web/.nojekyll
           echo "== Conferindo base-href no index.html =="
           sed -n '1,40p' build/web/index.html | sed -n '1,20p'
+        working-directory: fintrack360
 
       - name: Upload build logs
         uses: actions/upload-artifact@v4
         with:
           name: build_web_release_logs
-          path: build_web_release.log
+          path: fintrack360/build_web_release.log
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -91,7 +96,7 @@ jobs:
       - name: Upload artifact para Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/web
+          path: fintrack360/build/web
 
   deploy:
     environment:

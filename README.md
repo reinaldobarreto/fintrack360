@@ -6,7 +6,7 @@
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white)](https://dart.dev/)
 
-[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Shared Preferences](https://img.shields.io/badge/Storage-Shared%20Preferences-00599C)](https://pub.dev/packages/shared_preferences)
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/features/actions)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222?logo=github&logoColor=white)](https://pages.github.com/)
 
@@ -24,7 +24,7 @@ Aplicativo Flutter para controle financeiro pessoal/familiar. Foco em mobile-fir
 ## Overview
 - Stack principal: **Flutter/Dart** (mobile-first + build web para demo)
 - Deploy: **GitHub Pages** automatizado via **GitHub Actions**
-- Backend opcional: **Firebase** (Auth/Firestore)
+- Autenticação e dados: **Local** (SharedPreferences no Android/iOS; localStorage no Web)
 - Screenshots e assets padronizados em `assets/images/` (tela_*)
 
 ## Demo
@@ -81,9 +81,12 @@ flutter pub get
 - Web (Chrome): `flutter run -d chrome`
 - Android (emulador ou dispositivo físico): `flutter run`
 
-### Credenciais/Demo
-- Para avaliar rapidamente sem backend, use a opção `Pular login (demo local)`
-- Credenciais padrão também estão disponíveis: `admin@fintrack.com` / `admin1234`
+### Autenticação e armazenamento
+- Sem login de demonstração: acesso somente com cadastro e login.
+- Persistência por plataforma:
+  - Android/iOS: `SharedPreferences` (armazenamento local do dispositivo).
+  - Web: `localStorage` (via `shared_preferences` para web).
+- Usuário administrador pode apenas listar usuários; não há opção de deletar.
 
 ### Problemas comuns
 - Se o Gradle/SDK falhar, rode: `flutter clean && flutter pub get`
@@ -101,7 +104,7 @@ Para explicar visualmente o funcionamento no GitHub, inclua capturas de tela na 
 ![Relatórios](assets/images/tela_relatorios_mobile.png)
 
 ### O que cada imagem mostra
-- Login Mobile: campos de e‑mail/senha, ação de entrar e opção de pular login (debug).
+- Login Mobile: campos de e‑mail/senha e ação de entrar (sem pular login).
 - Dashboard Mobile: KPIs, gráficos e saldo por período (receitas − despesas).
 - Lançamentos Mobile: lista com filtros/ordenação, tipos (RECEITA/DESPESA) e categorias.
 
@@ -144,14 +147,13 @@ Para já mostrar o que existe hoje no repositório, você pode referenciar estas
   2. Faça push para `main`.
   3. Verifique em “Settings → Pages” se a publicação está ativa na `gh-pages`.
 
-## Desenvolvimento (opcional)
-- Emulador do Firebase sem custos: consulte `README_flutter.md` para instruções completas.
+## Desenvolvimento
+- O app funciona sem backend remoto. Todo estado e dados são locais ao dispositivo/navegador.
 
 ## Autor
 - Reinaldo Barreto — Flutter/Dart
 ## 📝 Observações
-- O login demo é somente local e não cria contas reais.
-- O login padrão (`admin@fintrack.com` / `admin1234`) segue disponível, mas você pode usar apenas o demo na Web.
+- Não há login de demonstração. Para acessar, crie sua conta na tela de cadastro.
 
 ## 🚀 Publicar no GitHub Pages (gh-pages)
 1) Habilite Web no Flutter (uma vez):
@@ -167,7 +169,7 @@ Para já mostrar o que existe hoje no repositório, você pode referenciar estas
 5) Alternativa (automática): use o workflow em `.github/workflows/deploy-gh-pages.yml` com ação manual (`workflow_dispatch`).
 ## 🔗 Demo Web (GitHub Pages)
 - Acesse: https://reinaldobarreto.github.io/fintrack360/
-- Na primeira visita, use “Pular login (demo local)” para avaliar rapidamente sem Firebase.
+- Cadastre-se e faça login para acessar o app. Os dados ficam no `localStorage`.
 
 <p>
   <a href="https://reinaldobarreto.github.io/fintrack360/" target="_blank">
@@ -206,8 +208,8 @@ Para já mostrar o que existe hoje no repositório, você pode referenciar estas
 
 ## 🧪 Como o recrutador pode avaliar
 - Abra a Demo Web no link acima.
-- Clique em “Pular login (demo local)” para acessar o dashboard.
-- Navegue pelos lançamentos, contas e gráficos; o estado é local ao navegador.
+- Cadastre-se e faça login; navegue pelos lançamentos, contas e gráficos.
+- O estado é local ao navegador e não há deleção de usuários.
 
 ## 📱 Build Mobile
 - Android APK: `flutter build apk --release`

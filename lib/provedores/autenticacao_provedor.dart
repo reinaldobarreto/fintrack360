@@ -1,13 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../modelos/usuario.dart';
-import '../servicos/autenticacao_servico.dart';
 import '../servicos/autenticacao_local_servico.dart';
 
 /// Provedor de autenticação para gerenciamento de estado
 class AutenticacaoProvedor extends ChangeNotifier {
-  final AutenticacaoServico _authServico = AutenticacaoServico();
   final AutenticacaoLocalServico _localServico = AutenticacaoLocalServico();
 
   Usuario? _usuarioAtual;
@@ -21,65 +18,20 @@ class AutenticacaoProvedor extends ChangeNotifier {
   bool get estaAutenticado => _usuarioAtual != null;
   bool get ehAdmin => _usuarioAtual?.ehAdmin ?? false;
 
-  /// Construtor - configura listener do estado de autenticação
+  /// Construtor - restaura sessão local
   AutenticacaoProvedor() {
-    _configurarListenerAutenticacao();
-    // Restaura sessão local automaticamente quando em ambiente web GitHub Pages
-    _restaurarSessaoLocalSeWebDemo();
+    _restaurarSessaoLocal();
   }
 
-  /// Configura o listener para mudanças no estado de autenticação
-  void _configurarListenerAutenticacao() {
-    _authServico.estadoAutenticacao.listen((User? user) async {
-      if (user != null) {
-        // Usuário logado - busca dados completos
-        await _carregarDadosUsuario(user.uid);
-      } else {
-        // Usuário deslogado
-        _usuarioAtual = null;
+  /// Restaura sessão local
+  Future<void> _restaurarSessaoLocal() async {
+    try {
+      final usuario = await _localServico.carregarSessao();
+      if (usuario != null) {
+        _usuarioAtual = usuario;
         notifyListeners();
       }
-    });
-  }
-
-  /// Detecta se deve usar o modo demo local (sem Firebase) na Web/GitHub Pages
-  bool get _usarModoLocalDemo {
-    if (kIsWeb) {
-      final host = Uri.base.host.toLowerCase();
-      if (host.endsWith('github.io')) return true;
-      // Permite ativar por dart-define
-      const bool porFlag = bool.fromEnvironment('USE_LOCAL_DEMO_AUTH', defaultValue: false);
-      return porFlag;
-    }
-    return const bool.fromEnvironment('USE_LOCAL_DEMO_AUTH', defaultValue: false);
-  }
-
-  /// Restaura sessão local se estiver em modo demo
-  Future<void> _restaurarSessaoLocalSeWebDemo() async {
-    if (_usarModoLocalDemo) {
-      try {
-        final usuario = await _localServico.carregarSessao();
-        if (usuario != null) {
-          _usuarioAtual = usuario;
-          notifyListeners();
-        }
-      } catch (_) {}
-    }
-  }
-
-  /// Carrega os dados completos do usuário
-  Future<void> _carregarDadosUsuario(String uid) async {
-    try {
-      _usuarioAtual = await _authServico.obterDadosUsuario(uid);
-    } catch (e) {
-      // Evita poluir a UI da tela de login com erros de carregamento automático
-      // quando a aplicação inicia ou restaura sessão.
-      if (kDebugMode) {
-        print('[Auth] Falha ao carregar dados do usuário: $e');
-      }
-    } finally {
-      notifyListeners();
-    }
+    } catch (_) {}
   }
 
   /// Realiza login
@@ -88,21 +40,37 @@ class AutenticacaoProvedor extends ChangeNotifier {
     _limparErro();
 
     try {
-      final usuario = await _authServico.fazerLogin(email, senha);
+      final usuario = await _localServico.fazerLoginLocal(email, senha);
       if (usuario != null) {
         _usuarioAtual = usuario;
+        await _localServico.salvarSessao(usuario);
         _definirCarregando(false);
         return true;
-      } else {
-        _mensagemErro = 'Falha no login. Tente novamente.';
-        _definirCarregando(false);
-        return false;
       }
+      _mensagemErro = 'Falha no login. Verifique suas credenciais.';
+      _definirCarregando(false);
+      return false;
     } catch (e) {
       _mensagemErro = e.toString();
       _definirCarregando(false);
       return false;
     }
+  }
+
+  /// Gera um nome amigável quando não existe displayName no Auth
+  String _gerarNomeFallback(String? displayName, String? email) {
+    if (displayName != null && displayName.trim().isNotEmpty) {
+      return displayName.trim();
+    }
+    if (email == null || email.isEmpty) return 'Usuário';
+    final base = email.split('@').first;
+    if (base.isEmpty) return 'Usuário';
+    final texto = base.replaceAll(RegExp(r'[._-]+'), ' ').trim();
+    return texto
+        .split(' ')
+        .map((p) => p.isEmpty ? '' : p[0].toUpperCase() + p.substring(1))
+        .where((p) => p.isNotEmpty)
+        .join(' ');
   }
 
   /// Realiza cadastro
@@ -115,21 +83,16 @@ class AutenticacaoProvedor extends ChangeNotifier {
     _limparErro();
 
     try {
-      final usuario = await _authServico.cadastrarUsuario(
+      final usuario = await _localServico.cadastrarUsuarioLocal(
         nome: nome,
         email: email,
         senha: senha,
       );
 
-      if (usuario != null) {
-        _usuarioAtual = usuario;
-        _definirCarregando(false);
-        return true;
-      } else {
-        _mensagemErro = 'Falha no cadastro. Tente novamente.';
-        _definirCarregando(false);
-        return false;
-      }
+      _usuarioAtual = usuario;
+      await _localServico.salvarSessao(usuario);
+      _definirCarregando(false);
+      return true;
     } catch (e) {
       _mensagemErro = e.toString();
       _definirCarregando(false);
@@ -137,30 +100,7 @@ class AutenticacaoProvedor extends ChangeNotifier {
     }
   }
 
-  /// Login rápido de demonstração (modo debug)
-  Future<void> loginDemo() async {
-    _definirCarregando(true);
-    _limparErro();
-    try {
-      final usuarioDemo = Usuario(
-        id: 'demo',
-        nome: 'Demo Admin',
-        email: 'admin@fintrack.com',
-        tipo: TipoUsuario.admin,
-        ativo: true,
-        dataCriacao: DateTime.now(),
-        dataUltimoAcesso: DateTime.now(),
-      );
-      _usuarioAtual = usuarioDemo;
-      // Persiste sessão local para Web/GitHub Pages
-      if (_usarModoLocalDemo) {
-        await _localServico.salvarSessao(usuarioDemo);
-      }
-    } finally {
-      _definirCarregando(false);
-      notifyListeners();
-    }
-  }
+  // Login de demonstração removido: acesso somente com usuários cadastrados
 
   /// Envia email de recuperação de senha
   Future<bool> enviarEmailRecuperacao(String email) async {
@@ -168,7 +108,8 @@ class AutenticacaoProvedor extends ChangeNotifier {
     _limparErro();
 
     try {
-      await _authServico.enviarEmailRecuperacao(email);
+      // Ambiente local: não há envio de email.
+      // Você pode implementar um fluxo de redefinição salvando uma nova senha localmente.
       _definirCarregando(false);
       return true;
     } catch (e) {
@@ -183,11 +124,7 @@ class AutenticacaoProvedor extends ChangeNotifier {
     _definirCarregando(true);
 
     try {
-      await _authServico.fazerLogout();
-      // Limpa sessão local quando em modo demo
-      if (_usarModoLocalDemo) {
-        await _localServico.limparSessao();
-      }
+      await _localServico.limparSessao();
       _usuarioAtual = null;
     } catch (e) {
       _mensagemErro = 'Erro ao fazer logout: $e';
@@ -199,7 +136,12 @@ class AutenticacaoProvedor extends ChangeNotifier {
   /// Atualiza os dados do usuário atual
   Future<void> atualizarDadosUsuario() async {
     if (_usuarioAtual != null) {
-      await _carregarDadosUsuario(_usuarioAtual!.id);
+      // Em ambiente local, recarrega a sessão armazenada
+      final recarregado = await _localServico.carregarSessao();
+      if (recarregado != null) {
+        _usuarioAtual = recarregado;
+        notifyListeners();
+      }
     }
   }
 

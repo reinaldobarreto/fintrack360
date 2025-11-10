@@ -5,6 +5,9 @@ import '../configuracao/tema_configuracao.dart';
 import '../componentes/card_kpi.dart';
 import '../componentes/grafico_pizza.dart';
 import '../componentes/grafico_barras.dart';
+import '../servicos/dados_local_servico.dart';
+import '../modelos/lancamento.dart';
+import '../modelos/categoria.dart';
 
 /// Tela de dashboard com gráficos e KPIs financeiros
 class DashboardTela extends StatefulWidget {
@@ -24,11 +27,25 @@ class _DashboardTelaState extends State<DashboardTela> {
     'Este ano',
   ];
 
-  // Dados mockados para demonstração
-  final double _totalReceitas = 5420.50;
-  final double _totalDespesas = 3280.75;
-  final double _saldoAtual = 2139.75;
-  final double _metaMensal = 5000.00;
+  // Serviços e dados reais
+  final DadosLocalServico _dadosLocal = DadosLocalServico();
+  List<Lancamento> _lancamentos = [];
+  List<Categoria> _categorias = [];
+
+  // Indicadores calculados a partir dos lançamentos
+  double _totalReceitas = 0.0;
+  double _totalDespesas = 0.0;
+  double _saldoAtual = 0.0;
+  double? _metaMensal;
+
+  // Dados agregados para o gráfico de pizza (gastos por categoria)
+  List<DadosCategoria> _dadosCategoriasPizza = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarDados();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,10 +262,10 @@ class _DashboardTelaState extends State<DashboardTela> {
         color: TemaConfiguracao.corSuperficie,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Gastos por Categoria',
             style: TextStyle(
               fontSize: 18,
@@ -256,10 +273,10 @@ class _DashboardTelaState extends State<DashboardTela> {
               color: TemaConfiguracao.corTexto,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           SizedBox(
             height: 200,
-            child: GraficoPizza(),
+            child: GraficoPizza(dados: _dadosCategoriasPizza),
           ),
         ],
       ),
@@ -268,7 +285,52 @@ class _DashboardTelaState extends State<DashboardTela> {
 
   /// Constrói o indicador de progresso da meta
   Widget _buildProgressoMeta() {
-    final progresso = _totalReceitas / _metaMensal;
+    if (_metaMensal == null || (_metaMensal ?? 0) <= 0) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: TemaConfiguracao.corSuperficie,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Meta Mensal',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: TemaConfiguracao.corTexto,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Nenhuma meta definida. Defina uma meta para acompanhar seu progresso.',
+              style: TextStyle(
+                fontSize: 14,
+                color: TemaConfiguracao.corTextoSecundario,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _definirMetaMensal,
+                icon: const Icon(Icons.flag_outlined,
+                    color: TemaConfiguracao.corPrimaria),
+                label: const Text(
+                  'Definir meta',
+                  style: TextStyle(color: TemaConfiguracao.corPrimaria),
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    }
+
+    final meta = _metaMensal ?? 1;
+    final progresso = (_totalReceitas / meta).clamp(0, 1);
     final progressoPercentual = (progresso * 100).clamp(0, 100);
 
     return Container(
@@ -303,7 +365,7 @@ class _DashboardTelaState extends State<DashboardTela> {
           ),
           const SizedBox(height: 12),
           LinearProgressIndicator(
-            value: progresso,
+            value: progresso.toDouble(),
             backgroundColor:
                 TemaConfiguracao.corTextoSecundario.withOpacity(0.2),
             valueColor: const AlwaysStoppedAnimation<Color>(
@@ -322,7 +384,7 @@ class _DashboardTelaState extends State<DashboardTela> {
                 ),
               ),
               Text(
-                'R\$ ${_metaMensal.toStringAsFixed(2).replaceAll('.', ',')}',
+                'R\$ ${meta.toStringAsFixed(2).replaceAll('.', ',')}',
                 style: const TextStyle(
                   fontSize: 14,
                   color: TemaConfiguracao.corTextoSecundario,
@@ -335,18 +397,114 @@ class _DashboardTelaState extends State<DashboardTela> {
     );
   }
 
+  Future<void> _definirMetaMensal() async {
+    final controller = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Definir meta mensal'),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(
+            labelText: 'Valor da meta (R\$)',
+            hintText: 'Ex: 5000,00',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Salvar'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      final texto = controller.text.trim().replaceAll(',', '.');
+      final valor = double.tryParse(texto);
+      if (valor != null && valor > 0) {
+        await _dadosLocal.salvarMetaMensal(valor);
+        if (mounted) {
+          setState(() {
+            _metaMensal = valor;
+          });
+        }
+      }
+    }
+  }
+
   /// Atualiza os dados do dashboard
   Future<void> _atualizarDados() async {
-    // Simula carregamento de dados
-    await Future.delayed(const Duration(seconds: 1));
+    await _carregarDados();
+  }
 
-    // Aqui seria implementada a lógica para buscar dados reais
-    // baseado no período selecionado
+  /// Carrega lançamentos e categorias, e calcula agregações para o dashboard
+  Future<void> _carregarDados() async {
+    try {
+      final lancamentosCarregados = await _dadosLocal.carregarLancamentos();
+      final categoriasCarregadas = await _dadosLocal.carregarCategorias();
+      final metaCarregada = await _dadosLocal.carregarMetaMensal();
 
-    if (mounted) {
-      setState(() {
-        // Dados atualizados
+      // Opcional: aplicar filtro por período selecionado
+      final lancamentos = lancamentosCarregados;
+
+      // Calcula totais
+      double receitas = 0.0;
+      double despesas = 0.0;
+      for (final l in lancamentos) {
+        if (l.tipo == TipoLancamento.receita) {
+          receitas += l.valor;
+        } else if (l.tipo == TipoLancamento.despesa) {
+          despesas += l.valor;
+        }
+      }
+
+      // Agrega despesas por categoria para o gráfico de pizza
+      final Map<String, double> totalPorCategoria = {};
+      for (final l in lancamentos.where((x) => x.tipo == TipoLancamento.despesa)) {
+        final catId = l.idCategoria ?? 'sem-categoria';
+        totalPorCategoria[catId] = (totalPorCategoria[catId] ?? 0.0) + l.valor;
+      }
+
+      // Mapeia ids para nomes e cores a partir das categorias
+      final Map<String, Categoria> mapaCategorias = {
+        for (final c in categoriasCarregadas) c.id: c
+      };
+      final dadosPizza = <DadosCategoria>[];
+      totalPorCategoria.forEach((catId, total) {
+        final cat = mapaCategorias[catId];
+        final nome = cat?.nome ?? 'Outros';
+        final cor = cat?.cor ?? Colors.grey;
+        dadosPizza.add(DadosCategoria(nome: nome, valor: total, cor: cor));
       });
+
+      if (mounted) {
+        setState(() {
+          _lancamentos = lancamentos;
+          _categorias = categoriasCarregadas;
+          _totalReceitas = receitas;
+          _totalDespesas = despesas;
+          _saldoAtual = receitas - despesas;
+          _dadosCategoriasPizza = dadosPizza;
+          _metaMensal = metaCarregada;
+        });
+      }
+    } catch (e) {
+      // Em caso de erro, mantém valores em zero
+      if (mounted) {
+        setState(() {
+          _lancamentos = [];
+          _categorias = [];
+          _totalReceitas = 0.0;
+          _totalDespesas = 0.0;
+          _saldoAtual = 0.0;
+          _dadosCategoriasPizza = [];
+        });
+      }
     }
   }
 }

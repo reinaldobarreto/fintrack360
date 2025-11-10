@@ -81,13 +81,17 @@ class GraficoBarras extends StatelessWidget {
   /// Calcula o valor máximo do eixo Y
   double _calcularMaxY() {
     final maxValor = receitas > despesas ? receitas : despesas;
+    // Evita valores zero/negativos que quebram escala e intervalos
+    if (maxValor <= 0) return 1.0;
     return (maxValor * 1.2).ceilToDouble();
   }
 
   /// Calcula o intervalo para os títulos do eixo Y
   double _calcularIntervalo() {
     final maxY = _calcularMaxY();
-    return (maxY / 5).ceilToDouble();
+    final intervalo = (maxY / 5).ceilToDouble();
+    // Garante intervalo mínimo positivo para renderização estável
+    return intervalo <= 0 ? 1.0 : intervalo;
   }
 
   /// Cria os títulos inferiores (eixo X)

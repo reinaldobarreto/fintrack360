@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../configuracao/tema_configuracao.dart';
 import '../modelos/conta.dart';
+import '../servicos/dados_local_servico.dart';
+import '../provedores/autenticacao_provedor.dart';
 
 /// Tela de contas
 class ContasTela extends StatefulWidget {
@@ -12,33 +15,31 @@ class ContasTela extends StatefulWidget {
 }
 
 class _ContasTelaState extends State<ContasTela> {
-  // Dados mockados para demonstração
-  final List<Conta> _contas = [
-    Conta(
-      id: 'conta1',
-      nome: 'Conta Corrente',
-      descricao: 'Banco Principal',
-      tipo: TipoConta.contaCorrente,
-      saldoInicial: 1200.00,
-      cor: Colors.blue,
-      icone: Icons.account_balance,
-      ativa: true,
-      dataCriacao: DateTime.now(),
-      idUsuario: 'user1',
-    ),
-    Conta(
-      id: 'conta2',
-      nome: 'Cartão de Crédito',
-      descricao: 'Cartão XPTO',
-      tipo: TipoConta.cartaoCredito,
-      saldoInicial: -800.00,
-      cor: Colors.red,
-      icone: Icons.credit_card,
-      ativa: true,
-      dataCriacao: DateTime.now(),
-      idUsuario: 'user1',
-    ),
-  ];
+  static const bool _modoLocal = bool.fromEnvironment('USE_LOCAL_DEMO_AUTH', defaultValue: false);
+  final DadosLocalServico _dadosLocal = DadosLocalServico();
+  // Lista inicial vazia (sem dados mockados)
+  List<Conta> _contas = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (_modoLocal) {
+      _carregarContasLocal();
+    }
+  }
+
+  Future<void> _carregarContasLocal() async {
+    final lista = await _dadosLocal.carregarContas();
+    if (lista.isNotEmpty) {
+      setState(() {
+        _contas = lista;
+      });
+    }
+  }
+
+  Future<void> _salvarContasLocal() async {
+    await _dadosLocal.salvarContas(_contas);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,6 +125,9 @@ class _ContasTelaState extends State<ContasTela> {
                                     _contas[index] =
                                         conta.copiarCom(ativa: v);
                                   });
+                                  if (_modoLocal) {
+                                    _salvarContasLocal();
+                                  }
                                 },
                               ),
                             ),
@@ -163,6 +167,9 @@ class _ContasTelaState extends State<ContasTela> {
 
   Future<void> _atualizarContas() async {
     await Future.delayed(const Duration(milliseconds: 800));
+    if (_modoLocal) {
+      await _carregarContasLocal();
+    }
     if (mounted) setState(() {});
   }
 
@@ -201,6 +208,8 @@ class _ContasTelaState extends State<ContasTela> {
     if (ok == true) {
       final saldo =
           double.tryParse(saldoController.text.replaceAll(',', '.')) ?? 0.0;
+      final auth = context.read<AutenticacaoProvedor>();
+      final usuarioId = auth.usuarioAtual?.id ?? 'local';
       setState(() {
         _contas.add(
           Conta(
@@ -213,10 +222,13 @@ class _ContasTelaState extends State<ContasTela> {
             icone: Icons.account_balance,
             ativa: true,
             dataCriacao: DateTime.now(),
-            idUsuario: 'user1',
+            idUsuario: usuarioId,
           ),
         );
       });
+      if (_modoLocal) {
+        await _salvarContasLocal();
+      }
     }
   }
 
@@ -268,6 +280,9 @@ class _ContasTelaState extends State<ContasTela> {
           );
         }
       });
+      if (_modoLocal) {
+        await _salvarContasLocal();
+      }
     }
   }
 
@@ -294,6 +309,9 @@ class _ContasTelaState extends State<ContasTela> {
       setState(() {
         _contas.removeWhere((c) => c.id == conta.id);
       });
+      if (_modoLocal) {
+        await _salvarContasLocal();
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Conta excluída'),

@@ -1,0 +1,65 @@
+name: Release Android APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-android-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: fintrack360
+
+      - name: Build release APK
+        run: |
+          flutter build apk --release \
+            --no-tree-shake-icons \
+            --dart-define=USE_LOCAL_DEMO_AUTH=true \
+            --dart-define=USE_FIREBASE_EMULATOR=false
+        working-directory: fintrack360
+
+      - name: Rename APK to stable name
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk dist/fintrack360-app-release.apk
+          ls -la dist
+        working-directory: fintrack360
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fintrack360-app-release
+          path: fintrack360/dist/fintrack360-app-release.apk
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_id }}
+          name: "FinTrack360 APK (release)"
+          draft: false
+          prerelease: false
+          files: fintrack360/dist/fintrack360-app-release.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

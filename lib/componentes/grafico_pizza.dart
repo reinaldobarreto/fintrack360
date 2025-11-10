@@ -4,7 +4,8 @@ import '../configuracao/tema_configuracao.dart';
 
 /// Componente de gráfico de pizza para mostrar gastos por categoria
 class GraficoPizza extends StatefulWidget {
-  const GraficoPizza({super.key});
+  final List<DadosCategoria> dados;
+  const GraficoPizza({super.key, required this.dados});
 
   @override
   State<GraficoPizza> createState() => _GraficoPizzaState();
@@ -12,16 +13,7 @@ class GraficoPizza extends StatefulWidget {
 
 class _GraficoPizzaState extends State<GraficoPizza> {
   int _secaoTocada = -1;
-
-  // Dados mockados para demonstração
-  final List<DadosCategoria> _dadosCategorias = [
-    DadosCategoria('Alimentação', 1200.50, Colors.orange),
-    DadosCategoria('Transporte', 650.30, Colors.blue),
-    DadosCategoria('Moradia', 800.00, Colors.green),
-    DadosCategoria('Lazer', 320.75, Colors.purple),
-    DadosCategoria('Saúde', 180.20, Colors.red),
-    DadosCategoria('Outros', 127.00, Colors.grey),
-  ];
+  
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +54,7 @@ class _GraficoPizzaState extends State<GraficoPizza> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: _dadosCategorias.asMap().entries.map((entry) {
+            children: widget.dados.asMap().entries.map((entry) {
               final index = entry.key;
               final categoria = entry.value;
               final ehTocada = index == _secaoTocada;
@@ -119,12 +111,17 @@ class _GraficoPizzaState extends State<GraficoPizza> {
 
   /// Cria as seções do gráfico de pizza
   List<PieChartSectionData> _criarSecoes() {
-    final total = _dadosCategorias.fold<double>(
+    if (widget.dados.isEmpty) {
+      return <PieChartSectionData>[];
+    }
+    final total = widget.dados.fold<double>(
       0,
       (sum, categoria) => sum + categoria.valor,
     );
-
-    return _dadosCategorias.asMap().entries.map((entry) {
+    if (total == 0) {
+      return <PieChartSectionData>[];
+    }
+    return widget.dados.asMap().entries.map((entry) {
       final index = entry.key;
       final categoria = entry.value;
       final ehTocada = index == _secaoTocada;
@@ -151,6 +148,5 @@ class DadosCategoria {
   final String nome;
   final double valor;
   final Color cor;
-
-  DadosCategoria(this.nome, this.valor, this.cor);
+  DadosCategoria({required this.nome, required this.valor, required this.cor});
 }

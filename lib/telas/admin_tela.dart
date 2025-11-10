@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../configuracao/tema_configuracao.dart';
 import '../modelos/usuario.dart';
+import '../servicos/autenticacao_local_servico.dart';
 
 /// Tela de administração de usuários
 class AdminTela extends StatefulWidget {
@@ -12,25 +13,21 @@ class AdminTela extends StatefulWidget {
 }
 
 class _AdminTelaState extends State<AdminTela> {
-  // Dados mockados de usuários
-  final List<Usuario> _usuarios = [
-    Usuario(
-      id: 'u1',
-      nome: 'Admin',
-      email: 'admin@fintrack.com',
-      tipo: TipoUsuario.admin,
-      ativo: true,
-      dataCriacao: DateTime.now(),
-    ),
-    Usuario(
-      id: 'u2',
-      nome: 'Maria Silva',
-      email: 'maria@exemplo.com',
-      tipo: TipoUsuario.usuario,
-      ativo: true,
-      dataCriacao: DateTime.now().subtract(const Duration(days: 10)),
-    ),
-  ];
+  final AutenticacaoLocalServico _localAuth = AutenticacaoLocalServico();
+  List<Usuario> _usuarios = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarUsuarios();
+  }
+
+  Future<void> _carregarUsuarios() async {
+    final lista = await _localAuth.listarUsuarios();
+    setState(() {
+      _usuarios = lista;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +89,11 @@ class _AdminTelaState extends State<AdminTela> {
                   Switch(
                     value: usuario.ativo,
                     activeThumbColor: TemaConfiguracao.corPrimaria,
-                    onChanged: (v) {
+                    onChanged: (v) async {
+                      final atualizado = usuario.copiarCom(ativo: v);
+                      await _localAuth.atualizarUsuario(atualizado);
                       setState(() {
-                        _usuarios[index] = usuario.copiarCom(ativo: v);
+                        _usuarios[index] = atualizado;
                       });
                     },
                   ),

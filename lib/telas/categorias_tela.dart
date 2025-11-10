@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../configuracao/tema_configuracao.dart';
 import '../modelos/categoria.dart';
+import '../servicos/dados_local_servico.dart';
+import '../provedores/autenticacao_provedor.dart';
 
 /// Tela de categorias financeiras
 class CategoriasTela extends StatefulWidget {
@@ -12,29 +15,10 @@ class CategoriasTela extends StatefulWidget {
 }
 
 class _CategoriasTelaState extends State<CategoriasTela> {
-  // Dados mockados para demonstração
-  final List<Categoria> _categorias = [
-    Categoria(
-      id: 'cat1',
-      nome: 'Alimentação',
-      descricao: 'Gastos com comida',
-      icone: Icons.restaurant,
-      cor: Colors.orange,
-      ativa: true,
-      dataCriacao: DateTime.now(),
-      idUsuarioCriador: 'user1',
-    ),
-    Categoria(
-      id: 'cat2',
-      nome: 'Transporte',
-      descricao: 'Gastos com deslocamento',
-      icone: Icons.directions_car,
-      cor: Colors.blue,
-      ativa: true,
-      dataCriacao: DateTime.now(),
-      idUsuarioCriador: 'user1',
-    ),
-  ];
+  static const bool _modoLocal = bool.fromEnvironment('USE_LOCAL_DEMO_AUTH', defaultValue: false);
+  final DadosLocalServico _dadosLocal = DadosLocalServico();
+  // Lista inicial vazia (sem dados mockados)
+  List<Categoria> _categorias = [];
 
   // Busca e filtro
   final TextEditingController _buscaController = TextEditingController();
@@ -72,6 +56,27 @@ class _CategoriasTelaState extends State<CategoriasTela> {
     Icons.flight,
     Icons.paid,
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (_modoLocal) {
+      _carregarCategoriasLocal();
+    }
+  }
+
+  Future<void> _carregarCategoriasLocal() async {
+    final lista = await _dadosLocal.carregarCategorias();
+    if (lista.isNotEmpty) {
+      setState(() {
+        _categorias = lista;
+      });
+    }
+  }
+
+  Future<void> _salvarCategoriasLocal() async {
+    await _dadosLocal.salvarCategorias(_categorias);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +181,7 @@ class _CategoriasTelaState extends State<CategoriasTela> {
                             Switch(
                               value: categoria.ativa,
                               activeThumbColor: TemaConfiguracao.corPrimaria,
-                              onChanged: (v) {
+                              onChanged: (v) async {
                                 setState(() {
                                   final idx = _categorias
                                       .indexWhere((c) => c.id == categoria.id);
@@ -185,6 +190,9 @@ class _CategoriasTelaState extends State<CategoriasTela> {
                                         categoria.copiarCom(ativa: v);
                                   }
                                 });
+                                if (_modoLocal) {
+                                  await _salvarCategoriasLocal();
+                                }
                               },
                             ),
                             IconButton(
@@ -217,6 +225,9 @@ class _CategoriasTelaState extends State<CategoriasTela> {
 
   Future<void> _atualizarCategorias() async {
     await Future.delayed(const Duration(milliseconds: 800));
+    if (_modoLocal) {
+      await _carregarCategoriasLocal();
+    }
     if (mounted) setState(() {});
   }
 
@@ -340,6 +351,8 @@ class _CategoriasTelaState extends State<CategoriasTela> {
         );
         return;
       }
+      final auth = context.read<AutenticacaoProvedor>();
+      final usuarioId = auth.usuarioAtual?.id ?? 'local';
       setState(() {
         _categorias.add(
           Categoria(
@@ -350,10 +363,13 @@ class _CategoriasTelaState extends State<CategoriasTela> {
             cor: corSelecionada,
             ativa: true,
             dataCriacao: DateTime.now(),
-            idUsuarioCriador: 'user1',
+            idUsuarioCriador: usuarioId,
           ),
         );
       });
+      if (_modoLocal) {
+        await _salvarCategoriasLocal();
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Categoria adicionada'),
@@ -474,6 +490,9 @@ class _CategoriasTelaState extends State<CategoriasTela> {
           );
         }
       });
+      if (_modoLocal) {
+        await _salvarCategoriasLocal();
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Categoria atualizada'),
@@ -505,6 +524,9 @@ class _CategoriasTelaState extends State<CategoriasTela> {
       setState(() {
         _categorias.removeWhere((c) => c.id == categoria.id);
       });
+      if (_modoLocal) {
+        await _salvarCategoriasLocal();
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Categoria excluída'),

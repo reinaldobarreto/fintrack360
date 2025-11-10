@@ -6,6 +6,7 @@ import '../configuracao/tema_configuracao.dart';
 import '../modelos/lancamento.dart';
 import '../modelos/categoria.dart';
 import '../modelos/conta.dart';
+import '../servicos/dados_local_servico.dart';
 
 /// Tela para adicionar ou editar lançamentos financeiros
 class AdicionarLancamentoTela extends StatefulWidget {
@@ -22,6 +23,8 @@ class AdicionarLancamentoTela extends StatefulWidget {
 }
 
 class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
+  static const bool _modoLocal = bool.fromEnvironment('USE_LOCAL_DEMO_AUTH', defaultValue: false);
+  final DadosLocalServico _dadosLocal = DadosLocalServico();
   final _formKey = GlobalKey<FormState>();
   final _descricaoController = TextEditingController();
   final _valorController = TextEditingController();
@@ -99,6 +102,9 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
   void initState() {
     super.initState();
     _inicializarDados();
+    if (_modoLocal) {
+      _carregarDadosAuxiliaresLocal();
+    }
   }
 
   @override
@@ -122,6 +128,27 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
       _contaSelecionada = lancamento.idConta;
       _dataSelecionada = lancamento.data;
     }
+  }
+
+  Future<void> _carregarDadosAuxiliaresLocal() async {
+    try {
+      final categorias = await _dadosLocal.carregarCategorias();
+      final contas = await _dadosLocal.carregarContas();
+      if (categorias.isNotEmpty) {
+        setState(() {
+          _categorias
+            ..clear()
+            ..addAll(categorias);
+        });
+      }
+      if (contas.isNotEmpty) {
+        setState(() {
+          _contas
+            ..clear()
+            ..addAll(contas);
+        });
+      }
+    } catch (_) {}
   }
 
   @override
@@ -429,7 +456,7 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
   }
 
   /// Salva o lançamento
-  void _salvarLancamento() {
+  void _salvarLancamento() async {
     if (!_formKey.currentState!.validate()) return;
 
     // Converter valor de string para double
@@ -446,8 +473,32 @@ class _AdicionarLancamentoTelaState extends State<AdicionarLancamentoTela> {
       return;
     }
 
-    // Aqui seria implementada a lógica para salvar no Firebase
-    // Por enquanto, apenas simula o salvamento
+    if (_modoLocal) {
+      // Monta objeto e persiste localmente
+      final novo = Lancamento(
+        id: _ehEdicao ? widget.lancamento!.id : DateTime.now().millisecondsSinceEpoch.toString(),
+        descricao: _descricaoController.text.trim(),
+        valor: valor,
+        tipo: _tipoSelecionado,
+        idCategoria: _categoriaSelecionada ?? _categorias.first.id,
+        idConta: _contaSelecionada ?? _contas.first.id,
+        data: _dataSelecionada,
+        idUsuario: 'user1',
+        dataCriacao: _ehEdicao ? widget.lancamento!.dataCriacao : DateTime.now(),
+        observacoes: _observacoesController.text.trim().isEmpty
+            ? null
+            : _observacoesController.text.trim(),
+      );
+
+      final existentes = await _dadosLocal.carregarLancamentos();
+      final idx = existentes.indexWhere((l) => l.id == novo.id);
+      if (idx >= 0) {
+        existentes[idx] = novo;
+      } else {
+        existentes.add(novo);
+      }
+      await _dadosLocal.salvarLancamentos(existentes);
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

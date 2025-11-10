@@ -324,39 +324,14 @@ class _LoginTelaState extends State<LoginTela> {
                       ),
                     ),
 
-                    // Botão para pular login (também habilitado na Web/GitHub Pages)
-                    if (kDebugMode || (Uri.base.host.toLowerCase().endsWith('github.io'))) ...[
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 44,
-                        child: TextButton.icon(
-                          icon: const Icon(Icons.developer_mode),
-                          label: const Text('Pular login (demo local)'),
-                          onPressed: () async {
-                            final authProvedor =
-                                Provider.of<AutenticacaoProvedor>(context,
-                                    listen: false);
-                            await authProvedor.loginDemo();
-                            if (!mounted) return;
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => const PrincipalTela(
-                                  sucessoMensagem: 'Login demo ativo',
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                    // Login de demonstração removido: acesso somente com usuários cadastrados
                   ],
                 ),
               ),
 
               const SizedBox(height: 40),
 
-              // Informação sobre conta admin padrão
+              // Informação de primeiro acesso: crie sua conta
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -378,7 +353,7 @@ class _LoginTelaState extends State<LoginTela> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          'Conta Administrador Padrão',
+                          'Primeiro acesso',
                           style: TextStyle(
                             color: TemaConfiguracao.corPrimaria,
                             fontWeight: FontWeight.bold,
@@ -388,7 +363,7 @@ class _LoginTelaState extends State<LoginTela> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Email: admin@fintrack.com\nSenha: admin123',
+                      'Ao instalar, o aplicativo inicia vazio e sem usuários. Use "Criar nova conta" para começar.',
                       style: TextStyle(
                         color: TemaConfiguracao.corTextoSecundario,
                         fontSize: 12,

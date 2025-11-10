@@ -3,6 +3,7 @@ import '../configuracao/tema_configuracao.dart';
 import '../modelos/lancamento.dart';
 import '../componentes/card_lancamento.dart';
 import 'adicionar_lancamento_tela.dart';
+import '../servicos/dados_local_servico.dart';
 
 /// Tela de lançamentos financeiros
 class LancamentosTela extends StatefulWidget {
@@ -13,6 +14,8 @@ class LancamentosTela extends StatefulWidget {
 }
 
 class _LancamentosTelaState extends State<LancamentosTela> {
+  static const bool _modoLocal = bool.fromEnvironment('USE_LOCAL_DEMO_AUTH', defaultValue: false);
+  final DadosLocalServico _dadosLocal = DadosLocalServico();
   String _filtroSelecionado = 'Todos';
   String _periodoSelecionado = 'Este mês';
 
@@ -24,43 +27,27 @@ class _LancamentosTelaState extends State<LancamentosTela> {
     'Este ano'
   ];
 
-  // Dados mockados para demonstração
-  final List<Lancamento> _lancamentos = [
-    Lancamento(
-      id: '1',
-      descricao: 'Salário',
-      valor: 5000.00,
-      tipo: TipoLancamento.receita,
-      idCategoria: 'cat1',
-      idConta: 'conta1',
-      data: DateTime.now().subtract(const Duration(days: 1)),
-      idUsuario: 'user1',
-      dataCriacao: DateTime.now(),
-    ),
-    Lancamento(
-      id: '2',
-      descricao: 'Supermercado',
-      valor: 250.80,
-      tipo: TipoLancamento.despesa,
-      idCategoria: 'cat2',
-      idConta: 'conta1',
-      data: DateTime.now().subtract(const Duration(days: 2)),
-      idUsuario: 'user1',
-      dataCriacao: DateTime.now(),
-      observacoes: 'Compras da semana',
-    ),
-    Lancamento(
-      id: '3',
-      descricao: 'Freelance',
-      valor: 800.00,
-      tipo: TipoLancamento.receita,
-      idCategoria: 'cat3',
-      idConta: 'conta2',
-      data: DateTime.now().subtract(const Duration(days: 3)),
-      idUsuario: 'user1',
-      dataCriacao: DateTime.now(),
-    ),
-  ];
+  // Lista inicial vazia (sem dados mockados)
+  List<Lancamento> _lancamentos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (_modoLocal) {
+      _carregarLancamentosLocal();
+    }
+  }
+
+  Future<void> _carregarLancamentosLocal() async {
+    final lista = await _dadosLocal.carregarLancamentos();
+    setState(() {
+      _lancamentos = lista;
+    });
+  }
+
+  Future<void> _salvarLancamentosLocal() async {
+    await _dadosLocal.salvarLancamentos(_lancamentos);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -339,7 +326,9 @@ class _LancamentosTelaState extends State<LancamentosTela> {
       setState(() {
         _lancamentos.removeWhere((l) => l.id == lancamento.id);
       });
-
+      if (_modoLocal) {
+        await _salvarLancamentosLocal();
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Lançamento excluído com sucesso'),
@@ -353,8 +342,9 @@ class _LancamentosTelaState extends State<LancamentosTela> {
   Future<void> _atualizarLancamentos() async {
     // Simula carregamento de dados
     await Future.delayed(const Duration(seconds: 1));
-
-    // Aqui seria implementada a lógica para buscar dados reais
+    if (_modoLocal) {
+      await _carregarLancamentosLocal();
+    }
 
     if (mounted) {
       setState(() {

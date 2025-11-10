@@ -23,60 +23,42 @@ class AutenticacaoServico {
 
       if (resultado.user != null) {
         print('[Auth] Login bem-sucedido uid=' + resultado.user!.uid);
-        // Garante que o documento do usuário exista e obtenha seus dados
-        final usuario = await obterDadosUsuario(resultado.user!.uid);
-        if (usuario != null) {
-          print('[Firestore] Leitura usuario uid=' + usuario.id + ' sucesso');
+        // Tenta obter/criar documento do usuário no Firestore,
+        // mas não bloqueia o login se ocorrer PERMISSION_DENIED.
+        Usuario? usuario;
+        try {
+          usuario = await obterDadosUsuario(resultado.user!.uid);
+          if (usuario != null) {
+            print('[Firestore] Leitura usuario uid=' + usuario.id + ' sucesso');
+          }
+        } on FirebaseException catch (fe) {
+          // Se as regras do Firestore não estiverem publicadas, continuamos com dados mínimos.
+          print('[Firestore] Permissão negada ao obter/criar usuario: code=' + fe.code + ' message=' + (fe.message ?? ''));
+          final u = resultado.user!;
+          usuario = Usuario(
+            id: u.uid,
+            nome: u.displayName ?? 'Usuário',
+            email: u.email ?? email.trim(),
+            tipo: TipoUsuario.usuario,
+            ativo: true,
+            dataCriacao: DateTime.now(),
+            dataUltimoAcesso: DateTime.now(),
+          );
         }
-        // Atualiza a data do último acesso após garantir a existência do documento.
-        // Qualquer falha aqui não deve bloquear o login.
-        await _atualizarUltimoAcesso(resultado.user!.uid);
-        print('[Firestore] Write dataUltimoAcesso uid=' + resultado.user!.uid + ' sucesso');
+
+        // Atualiza último acesso sem bloquear login em caso de erro
+        try {
+          await _atualizarUltimoAcesso(resultado.user!.uid);
+          print('[Firestore] Write dataUltimoAcesso uid=' + resultado.user!.uid + ' sucesso');
+        } catch (e) {
+          print('[Firestore] Falha ao atualizar último acesso: ' + e.toString());
+        }
         return usuario;
       }
       return null;
     } on FirebaseAuthException catch (e) {
-      // Se o usuário não existir e for o admin padrão, cria automaticamente
-      if (e.code == 'user-not-found' && email.trim() == 'admin@fintrack.com') {
-        try {
-          // Cria o usuário administrador com a senha informada
-          final UserCredential novo = await _auth.createUserWithEmailAndPassword(
-            email: email.trim(),
-            password: senha,
-          );
-
-          if (novo.user != null) {
-            // Cria documento do admin no Firestore
-            final usuarioAdmin = Usuario(
-              id: novo.user!.uid,
-              nome: 'Administrador',
-              email: email.trim(),
-              tipo: TipoUsuario.admin,
-              ativo: true,
-              dataCriacao: DateTime.now(),
-              dataUltimoAcesso: DateTime.now(),
-            );
-
-            await _firestore
-                .collection('usuarios')
-                .doc(novo.user!.uid)
-                .set(usuarioAdmin.paraFirestore());
-            print('[Firestore] Write usuario admin uid=' + novo.user!.uid + ' sucesso');
-
-            // Atualiza nome de exibição
-            await novo.user!.updateDisplayName('Administrador');
-
-            // Retorna dados completos
-            return await obterDadosUsuario(novo.user!.uid);
-          }
-          return null;
-        } on FirebaseAuthException catch (ce) {
-          // Propaga erro tratado do fluxo de criação
-          throw _tratarErroAutenticacao(ce);
-        } catch (ce) {
-          throw Exception('Erro ao criar usuário admin: $ce');
-        }
-      }
+      // Não criar usuário automaticamente em produção.
+      // Exigir cadastro manual para qualquer email, inclusive admin.
       throw _tratarErroAutenticacao(e);
     }
   }
@@ -105,13 +87,24 @@ class AutenticacaoServico {
           dataUltimoAcesso: DateTime.now(),
         );
 
-        await _firestore
-            .collection('usuarios')
-            .doc(resultado.user!.uid)
-            .set(usuario.paraFirestore());
+        // Tenta persistir no Firestore, mas não falha o cadastro se houver PERMISSION_DENIED
+        try {
+          await _firestore
+              .collection('usuarios')
+              .doc(resultado.user!.uid)
+              .set(usuario.paraFirestore());
+          print('[Firestore] Write usuario uid=' + resultado.user!.uid + ' sucesso');
+        } on FirebaseException catch (fe) {
+          print('[Firestore] Falha ao escrever usuario uid=' + resultado.user!.uid + ' code=' + fe.code + ' message=' + (fe.message ?? ''));
+          // Continua o cadastro mesmo com erro de permissão para não bloquear o fluxo
+        } catch (e) {
+          print('[Firestore] Erro inesperado ao escrever usuario uid=' + resultado.user!.uid + ': ' + e.toString());
+        }
 
-        // Atualiza o nome de exibição no Firebase Auth
-        await resultado.user!.updateDisplayName(nome);
+        // Atualiza o nome de exibição no Firebase Auth (não bloquear se falhar)
+        try {
+          await resultado.user!.updateDisplayName(nome);
+        } catch (_) {}
 
         return usuario;
       }
@@ -155,9 +148,9 @@ class AutenticacaoServico {
           id: uid,
           nome: user.displayName ?? 'Usuário',
           email: user.email ?? '',
-          tipo: (user.email != null && user.email!.toLowerCase() == 'admin@fintrack.com')
-              ? TipoUsuario.admin
-              : TipoUsuario.usuario,
+          // Não promover automaticamente para admin com base no email.
+          // Todo usuário criado é do tipo USUARIO por padrão.
+          tipo: TipoUsuario.usuario,
           ativo: true,
           dataCriacao: DateTime.now(),
           dataUltimoAcesso: DateTime.now(),
@@ -257,7 +250,7 @@ class AutenticacaoServico {
   String _tratarErroAutenticacao(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':
-        return 'Usuário não encontrado. Verifique o email informado.';
+        return 'Usuário não encontrado. Crie uma conta para acessar.';
       case 'wrong-password':
         return 'Senha incorreta. Tente novamente.';
       case 'email-already-in-use':
